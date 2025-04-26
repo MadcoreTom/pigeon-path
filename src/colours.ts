@@ -1,10 +1,10 @@
 // https://lospec.com/palette-list/bumble-bee
-export const COLOURS = {
-    DARK: "#3b3c40",
-    LIGHT: "#f6f6f6",
-    PRIMARY: "#f8c868",
-    SECONDARY: "#ff8e65"
-}
+// export const COLOURS = {
+//     DARK: "#3b3c40",
+//     LIGHT: "#f6f6f6",
+//     PRIMARY: "#f8c868",
+//     SECONDARY: "#ff8e65"
+// }
 
 // https://lospec.com/palette-list/softserve-4
 // export const COLOURS = {
@@ -13,3 +13,11 @@ export const COLOURS = {
 //     PRIMARY: "#64c1bd",
 //     SECONDARY: "#ead762"
 // }
+
+// https://lospec.com/palette-list/mangavania
+export const COLOURS = {
+    DARK: "#b03e80",
+    LIGHT: "#ffffff",
+    PRIMARY: "#4aedff",
+    SECONDARY: "#ff8acd"
+}

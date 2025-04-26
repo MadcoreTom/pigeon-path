@@ -1,21 +1,24 @@
 import { COLOURS } from "./colours";
+import { Controls, initKeyboard, isKeyTyped } from "./controls";
 import { TileImage } from "./img";
 import { initState, State, Tile, XY } from "./world";
 
 const canvas = document.querySelector("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+initKeyboard();
 
-const WIDTH = 240;
-const HEIGHT = 240;
-
-ctx.fillStyle = COLOURS.SECONDARY;
-ctx.fillRect(0, 0, WIDTH, HEIGHT);
+const WIDTH = 260;
+const HEIGHT = 260;
 
 const state = initState();
 
 const img = new TileImage("img.png", 13);
 
 function render(state: State) {
+
+    ctx.fillStyle = COLOURS.SECONDARY;
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
     state.tiles.forEach((x, y, t) => {
         switch (t) {
             case Tile.EMPTY:
@@ -29,7 +32,6 @@ function render(state: State) {
         }
 
     });
-    img.draw(ctx, [0, 0], [0, 0]);
 
     // draw path
     state.path.forEach((cur, idx) => {
@@ -74,12 +76,45 @@ function render(state: State) {
         }
 
         img.draw(ctx, tile, [cur[0] * 13, cur[1] * 13])
-    })
+    });
+
+
+    /// Draw length
+    ctx.fillStyle =COLOURS.LIGHT;
+    ctx.fillText(""+state.path.length,2,100)
 
 }
 
 function tick(time: number) {
     render(state);
+    let movement :null | XY = null;
+    if(isKeyTyped(Controls.UP)){
+        movement = [0,-1];
+    }
+    if(isKeyTyped(Controls.LEFT)){
+        movement = [-1,0];
+    }
+    if(isKeyTyped(Controls.DOWN)){
+        movement = [0,1];
+    }
+    if(isKeyTyped(Controls.RIGHT)){
+        movement = [1,0];
+    }
+
+    if (movement) {
+        const end = state.path[state.path.length - 1];
+        const secondEnd = state.path[state.path.length - 2];
+        const newPos: XY = [end[0] + movement[0], end[1] + movement[1]];
+
+        if (secondEnd && secondEnd[0] == newPos[0] && secondEnd[1] == newPos[1]) {
+            state.path.pop();
+        } else {
+            const collides = state.tiles.get(newPos[0],newPos[1]) == Tile.WALL;
+            if(!collides){
+                state.path.push(newPos);
+            }
+        }
+    }
     window.requestAnimationFrame(tick);
 }
 
