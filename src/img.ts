@@ -18,7 +18,7 @@ export class TileImage {
             const size = this.size;
             ctx.drawImage(this.image,
                 tile[0] * size, tile[1] * size, size, size,
-                pos[0], pos[1], size, size)
+                Math.floor(pos[0]), Math.floor(pos[1]), size, size)
         }
     }
 }

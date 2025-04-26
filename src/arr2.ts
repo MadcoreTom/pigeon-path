@@ -5,7 +5,7 @@ export class Arr2<T> {
     }
 
     public inRange(x: number, y: number): boolean {
-        return x > 0 && y > 0 && x < this.width && y < this.height;
+        return x >= 0 && y >= 0 && x < this.width && y < this.height;
     }
 
     public fill(func: (x: number, y: number) => T): void {

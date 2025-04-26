@@ -22,6 +22,10 @@ function onKey(key: string, down: boolean) {
         case "d":
             keys[Controls.RIGHT] = down;
             break;
+            case "Enter":
+            case "z":
+            keys[Controls.CONFIRM] = down;
+            break;
         default:
             console.log(key)
     }

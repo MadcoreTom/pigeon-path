@@ -9,7 +9,8 @@ export type XY = [number, number];
 
 export type State = {
     tiles: Arr2<Tile>,
-    path: XY[]
+    path: XY[],
+    moving: null | number
 }
 
 export function initState(): State {
@@ -29,6 +30,7 @@ export function initState(): State {
             [3,1],
             [4,1],
             [4,0]
-        ]
+        ],
+        moving:null
     }
 }
