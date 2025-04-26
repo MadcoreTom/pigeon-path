@@ -5,3 +5,11 @@ export const COLOURS = {
     PRIMARY: "#f8c868",
     SECONDARY: "#ff8e65"
 }
+
+// https://lospec.com/palette-list/softserve-4
+// export const COLOURS = {
+//     DARK: "#e64270",
+//     LIGHT: "#e3e6e8",
+//     PRIMARY: "#64c1bd",
+//     SECONDARY: "#ead762"
+// }
