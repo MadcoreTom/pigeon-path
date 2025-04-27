@@ -24,7 +24,7 @@ export function update(state: State) {
 
             if (secondEnd && secondEnd[0] == newPos[0] && secondEnd[1] == newPos[1]) {
                 state.path.pop();
-            } else if (state.path.length == state.moves) {
+            } else if (state.path.length == state.finalMoves) {
                 console.log("max length")
             } else {
                 const collides = state.tiles.get(newPos[0], newPos[1]) == Tile.WALL;
@@ -47,4 +47,27 @@ export function update(state: State) {
             state.path = [end];
         }
     }
+
+    calcMoves(state);
+}
+
+function calcMoves(state: State) {
+    state.modifiers = [];
+    state.path.forEach(p=>{
+        const t = state.tiles.get(p[0],p[1]);
+        if(t == Tile.MULTIPLY){
+            state.modifiers.push("x")
+        } else if(t == Tile.PLUS){
+            state.modifiers.push("+")
+        }
+    })
+    let m = state.moves;
+    state.modifiers.forEach(x => {
+        if (x == "+") {
+            m++;
+        } else {
+            m *= 2;
+        }
+    });
+    state.finalMoves = m;
 }

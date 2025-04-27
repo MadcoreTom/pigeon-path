@@ -23,6 +23,8 @@ export function render(ctx: CanvasRenderingContext2D, state: State, time: number
     /// Draw length
     ctx.fillStyle = COLOURS.LIGHT;
     ctx.fillText("" + state.path.length, 2, 100)
+
+    renderHud(ctx,state)
 }
 
 function renderTiles(ctx: CanvasRenderingContext2D, state: State, time: number) {
@@ -63,10 +65,10 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State, time: number) 
                 img.draw(ctx, [8, 0], [x * 13, y * 13]);
                 break;
             case Tile.PLUS:
-                img.draw(ctx, [8, 1], [x * 13, y * 13 + Math.sin(time / 100 + x + y)*1.5]);
+                img.draw(ctx, [8, 1], [x * 13, y * 13 + Math.sin(time / 100 + x + y) * 1.5]);
                 break;
             case Tile.MULTIPLY:
-                img.draw(ctx, [9, 1], [x * 13, y * 13 + Math.sin(time / 100 + x + y)*1.5]);
+                img.draw(ctx, [9, 1], [x * 13, y * 13 + Math.sin(time / 100 + x + y) * 1.5]);
                 break;
         }
 
@@ -122,4 +124,31 @@ function renderPath(ctx: CanvasRenderingContext2D, state: State) {
         img.draw(ctx, tile, [cur[0] * 13, cur[1] * 13])
     });
 
+}
+
+
+function renderHud(ctx: CanvasRenderingContext2D, state: State) {
+    ctx.fillStyle = COLOURS.DARK;
+    ctx.fillRect(0, HEIGHT - 13 * 2, WIDTH, 13*2);
+
+    const len = renderNumber(ctx, state.moves, [2*13, 18*13]);
+    state.modifiers.forEach((m,x)=>{
+        const tile:XY = m == "+" ? [8,3] : [9,3];
+        img.draw(ctx, tile, [(2+len+x)*13,  18*13]);
+    });
+    img.draw(ctx, [7,3], [(2 + length + state.modifiers.length + 1)*13,  18*13]);
+    renderNumber(ctx, state.finalMoves, [(2 + length + state.modifiers.length + 2)*13, 18*13]);
+
+    renderNumber(ctx, state.path.length, [2*13, 19*13]);
+}
+
+
+function renderNumber(ctx: CanvasRenderingContext2D, num: number, pos: XY):number {
+    const chars = ("" + Math.floor(num)).split("");
+
+    const offset = "0".charCodeAt(0);
+    chars.forEach((char, x) => {
+        img.draw(ctx, [char.charCodeAt(0) - offset,2], [pos[0] + x*13, pos[1]]);
+    });
+    return chars.length;
 }
