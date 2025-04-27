@@ -3,27 +3,14 @@ theme: calculations
 
 limitation: 4 colours
 
-colours: 
-- https://lospec.com/palette-list/softserve-4
-- https://lospec.com/palette-list/bumble-bee
+## Theme : calculations
 
-inspiration
-* calculator	https://au.pinterest.com/pin/432204895510506050/
-* paper apps golf	https://au.pinterest.com/pin/146085581658498441/
-* outdoor map	https://au.pinterest.com/pin/70437487920855/
+You have to take a certain number of steps to reach the goal.
 
+if you stop on a door, it opens the door
 
-idea
-	turn based roguelike
-	pick up coins to pay to unlock doors. you need the exact change
-doors can hold money or weapons or baddies
-baddies drop coins
-	- how do we deal with situations where you can't progress
+if you step over a + or x2 your steps increase for this move
 
-or maybe you can only move X steps exactly (like mario party) and you have 3 "cards" to choose from. once used you get a new random one
+## Resources
 
-bad guys have Y health, so if they ave 2 health and are 4 away, you can kill them
-
-
-maybe just indoors
-make rectangle room, make doors that linkto nothing orexistng ghost roms, make ghhst rooms on other side of dooorskk
+* Numbers based on https://www.dafont.com/bestime.font?text=0+1+2+3+4+5+6+7+8+9

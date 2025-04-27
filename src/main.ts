@@ -1,4 +1,5 @@
 import { initKeyboard } from "./controls";
+import { loadLevel } from "./levels";
 import { render } from "./render";
 import { update } from "./update";
 import { initState } from "./world";
@@ -8,9 +9,10 @@ const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 initKeyboard();
 
 const state = initState();
+loadLevel(state,"LEVEL1")
 
 function tick(time: number) {
-    render(ctx, state);
+    render(ctx, state, time);
     update(state);
     window.requestAnimationFrame(tick);
 }

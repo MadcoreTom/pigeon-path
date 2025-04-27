@@ -16,14 +16,16 @@ export function update(state: State) {
         if (isKeyTyped(Controls.RIGHT)) {
             movement = [1, 0];
         }
-    
+
         if (movement) {
             const end = state.path[state.path.length - 1];
             const secondEnd = state.path[state.path.length - 2];
             const newPos: XY = [end[0] + movement[0], end[1] + movement[1]];
-    
+
             if (secondEnd && secondEnd[0] == newPos[0] && secondEnd[1] == newPos[1]) {
                 state.path.pop();
+            } else if (state.path.length == state.moves) {
+                console.log("max length")
             } else {
                 const collides = state.tiles.get(newPos[0], newPos[1]) == Tile.WALL;
                 if (!collides) {

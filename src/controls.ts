@@ -22,8 +22,9 @@ function onKey(key: string, down: boolean) {
         case "d":
             keys[Controls.RIGHT] = down;
             break;
-            case "Enter":
-            case "z":
+        case "Enter":
+        case "z":
+        case "e":
             keys[Controls.CONFIRM] = down;
             break;
         default:

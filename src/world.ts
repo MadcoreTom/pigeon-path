@@ -2,7 +2,11 @@ import { Arr2 } from "./arr2"
 
 export enum Tile {
     EMPTY,
-    WALL
+    WALL,
+    FLAG,
+    DOOR_CLOSED,
+    PLUS,
+    MULTIPLY
 }
 
 export type XY = [number, number];
@@ -10,7 +14,8 @@ export type XY = [number, number];
 export type State = {
     tiles: Arr2<Tile>,
     path: XY[],
-    moving: null | number
+    moving: null | number,
+    moves: number
 }
 
 export function initState(): State {
@@ -31,6 +36,7 @@ export function initState(): State {
             [4,1],
             [4,0]
         ],
-        moving:null
+        moving:null,
+        moves: 5
     }
 }
