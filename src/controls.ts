@@ -1,7 +1,7 @@
 import { SOUND } from "./sound";
 
 export enum Controls {
-    UP, DOWN, LEFT, RIGHT, CONFIRM, BACK
+    UP, DOWN, LEFT, RIGHT, CONFIRM, RESET
 }
 
 const keys: boolean[] = [];
@@ -28,6 +28,9 @@ function onKey(key: string, down: boolean) {
         case "z":
         case "e":
             keys[Controls.CONFIRM] = down;
+            break;
+        case "Escape":
+            keys[Controls.RESET] = down;
             break;
     }
     SOUND.resume();

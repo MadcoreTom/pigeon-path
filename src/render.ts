@@ -30,9 +30,7 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State, time: number) 
     state.tiles.forEach((x, y, t) => {
         switch (t) {
             case Tile.EMPTY:
-                ctx.fillStyle = COLOURS.PRIMARY;
-                ctx.fillRect(x * 13 + 6, y * 13 + 5, 1, 3);
-                ctx.fillRect(x * 13 + 5, y * 13 + 6, 3, 1);
+                img.draw(ctx, [5, 0], [x * 13, y * 13]);
                 break;
             case Tile.WALL:
                 img.draw(ctx, [5, 1], [x * 13, y * 13]);

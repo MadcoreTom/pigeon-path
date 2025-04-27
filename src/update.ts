@@ -71,6 +71,9 @@ export function update(state: State, delta: number) {
     }
 
     calcMoves(state);
+    if (isKeyTyped(Controls.RESET)) {
+        loadLevel(state, state.level);
+    }
 }
 
 function calcMoves(state: State) {

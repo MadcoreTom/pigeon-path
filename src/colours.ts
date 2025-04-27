@@ -5,7 +5,7 @@
 //     PRIMARY: "#f8c868",
 //     SECONDARY: "#ff8e65"
 // }
-
+4
 // https://lospec.com/palette-list/softserve-4
 // export const COLOURS = {
 //     DARK: "#e64270",
@@ -21,3 +21,11 @@ export const COLOURS = {
     PRIMARY: "#4aedff",
     SECONDARY: "#ff8acd"
 }
+
+//https://lospec.com/palette-list/singularity
+// export const COLOURS = {
+//     DARK: "#222323",
+//     LIGHT: "#f0f6f0",
+//     PRIMARY: "#c93038",
+//     SECONDARY: "#7fa663"
+// }
