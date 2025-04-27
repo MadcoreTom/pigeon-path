@@ -1,3 +1,5 @@
+import { SOUND } from "./sound";
+
 export enum Controls {
     UP, DOWN, LEFT, RIGHT, CONFIRM, BACK
 }
@@ -30,6 +32,7 @@ function onKey(key: string, down: boolean) {
         default:
             console.log(key)
     }
+    SOUND.resume();
 }
 
 export function initKeyboard() {

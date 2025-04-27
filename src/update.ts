@@ -1,5 +1,6 @@
 import { Controls, isKeyTyped } from "./controls";
 import { loadLevel } from "./levels";
+import { SOUND } from "./sound";
 import { State, Tile, XY } from "./world";
 
 export function update(state: State) {
@@ -33,16 +34,24 @@ export function update(state: State) {
                     const needsToFinishOnThisTile = state.tiles.get(newPos[0], newPos[1]) == Tile.DOOR_CLOSED;
                     if(needsToFinishOnThisTile && state.finalMoves != state.path.length +1 ){
                         console.log("have to finish", newPos,state.finalMoves , state.path.length)
+                        SOUND.doorLocked();
                     } else {
                         state.path.push(newPos);
+                        SOUND.move();
                     }
                 } else {
                     console.log("collides", newPos)
+                    SOUND.collide();
                 }
             }
         }
-        if (isKeyTyped(Controls.CONFIRM) && state.path.length == state.finalMoves) {
-            state.moving = 0;
+        if (isKeyTyped(Controls.CONFIRM) ) {
+            if(state.path.length == state.finalMoves){
+                state.moving = 0;
+                SOUND.openDoor();
+            } else {
+                SOUND.collide();
+            }
         }
     } else {
         // moving
@@ -53,8 +62,10 @@ export function update(state: State) {
             state.path = [end];
             const tile = state.tiles.get(end[0],end[1]);
             if(tile == Tile.DOOR_CLOSED){
+                SOUND.openDoor();
                 state.tiles.set(end[0],end[1], Tile.DOOR_OPENED);
             } else if(tile == Tile.FLAG){
+                SOUND.newLevel();
                 state.level++;
                 loadLevel(state, state.level);
             }
