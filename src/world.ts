@@ -12,13 +12,15 @@ export enum Tile {
 
 export type XY = [number, number];
 
+export type Mode = { type: "play" } | { type: "moving", progress: number } | { type: "transition", direction: "up" | "down", progress: number, levelDelta: number }
+
 export type State = {
     tiles: Arr2<Tile>,
     path: XY[],
-    moving: null | number,
+    mode: Mode,
     moves: number,
     finalMoves: number,
-    modifiers: ("x"|"+")[],
+    modifiers: ("x" | "+")[],
     level: number
 }
 
@@ -30,17 +32,17 @@ export function initState(): State {
     return {
         tiles,
         path: [
-            [0,0],
-            [0,1],
-            [0,2],
-            [1,2],
-            [1,1],
-            [2,1],
-            [3,1],
-            [4,1],
-            [4,0]
+            [0, 0],
+            [0, 1],
+            [0, 2],
+            [1, 2],
+            [1, 1],
+            [2, 1],
+            [3, 1],
+            [4, 1],
+            [4, 0]
         ],
-        moving:null,
+        mode: { type: "transition", direction: "up", progress: 2, levelDelta: 0 },
         moves: 5,
         finalMoves: 5,
         modifiers: [],

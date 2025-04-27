@@ -4,7 +4,7 @@ import { SOUND } from "./sound";
 import { State, Tile, XY } from "./world";
 
 export function update(state: State, delta: number) {
-    if (state.moving == null) {
+    if (state.mode.type == "play") {
         let movement: null | XY = null;
         if (isKeyTyped(Controls.UP)) {
             movement = [0, -1];
@@ -45,17 +45,17 @@ export function update(state: State, delta: number) {
         }
         if (isKeyTyped(Controls.CONFIRM)) {
             if (state.path.length == state.finalMoves) {
-                state.moving = 0;
+                state.mode = {type:"moving", progress: 0};
                 SOUND.openDoor();
             } else {
                 SOUND.collide();
             }
         }
-    } else {
+    } else if(state.mode.type == "moving"){
         // moving
-        state.moving += delta * 0.01;
-        if (state.moving >= state.path.length) {
-            state.moving = null;
+        state.mode.progress += delta * 0.01;
+        if (state.mode.progress >= state.path.length) {
+            state.mode = {type:"play"};
             const end = state.path[state.path.length - 1];
             state.path = [end];
             const tile = state.tiles.get(end[0], end[1]);
@@ -64,15 +64,30 @@ export function update(state: State, delta: number) {
                 state.tiles.set(end[0], end[1], Tile.DOOR_OPENED);
             } else if (tile == Tile.FLAG) {
                 SOUND.newLevel();
-                state.level++;
+                state.mode = {type:"transition",progress:0, direction:"down",levelDelta:1};
+            }
+        }
+    } else if (state.mode.type == "transition") {
+        if (state.mode.direction == "down") {
+            state.mode.progress += delta * 0.003;
+            if (state.mode.progress > 1.5) {
+                state.mode.progress = 1;
+                state.mode.direction = "up";
+                state.level += state.mode.levelDelta;
                 loadLevel(state, state.level);
             }
+        } else {
+            state.mode.progress -= delta * 0.003;
+            if (state.mode.progress < 0) {
+                state.mode = { type: "play" }
+            }
+
         }
     }
 
     calcMoves(state);
     if (isKeyTyped(Controls.RESET)) {
-        loadLevel(state, state.level);
+        state.mode = {type:"transition",progress:0, direction:"down",levelDelta:0};
     }
 }
 

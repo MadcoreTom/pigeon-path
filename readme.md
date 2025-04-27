@@ -19,6 +19,7 @@ if you step over a + or x2 your steps increase for this move
 
 * ✅ reset button, in case the palyer softlocks themselves
 * Tiles you're not allowed to stop on (maybe there's no dot)
-* track the number of turns
+* Spash screen
+* track the number of turns, and have a par
 * imps that move left/right or up/down each turn
 * Different palettes

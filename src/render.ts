@@ -9,10 +9,10 @@ const img = new TileImage("img.png", 13);
 export function render(ctx: CanvasRenderingContext2D, state: State, time: number) {
     renderTiles(ctx, state, time);
 
-    if (state.moving) {
-        const ai = Math.floor(state.moving);
+    if (state.mode.type == "moving") {
+        const ai = Math.floor(state.mode.progress);
         const bi = Math.min(state.path.length - 1, ai + 1);
-        const u = state.moving - ai;
+        const u = state.mode.progress - ai;
         const x = state.path[bi][0] * u + state.path[ai][0] * (1 - u);
         const y = state.path[bi][1] * u + state.path[ai][1] * (1 - u);
         img.draw(ctx, [6, 0], [x * 13, y * 13]); // TODO round or floor
@@ -20,7 +20,20 @@ export function render(ctx: CanvasRenderingContext2D, state: State, time: number
         renderPath(ctx, state, time);
     }
 
-    renderHud(ctx, state)
+    renderHud(ctx, state);
+
+    if(state.mode.type == "transition"){
+        ctx.fillStyle = COLOURS.PRIMARY;
+        const h=Math.floor(HEIGHT * state.mode.progress);
+        ctx.fillRect(0,0,WIDTH,h);
+        img.draw(ctx,[0,8],[13*5, Math.floor(Math.min(HEIGHT/2,h - 13 * 2))],[10,2])
+        img.draw(ctx,[6,0],[13*3.5, Math.floor(Math.min(HEIGHT/2 + 0.5 * 13,h - 13 *1.5))])
+    }
+}
+
+function rnd([x,y]:XY):boolean {
+    return Math.floor(x *3 + y*2 + x * y + Math.sin(x*95.0))%2==0;
+
 }
 
 function renderTiles(ctx: CanvasRenderingContext2D, state: State, time: number) {
@@ -33,7 +46,7 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State, time: number) 
                 img.draw(ctx, [5, 0], [x * 13, y * 13]);
                 break;
             case Tile.WALL:
-                img.draw(ctx, [5, 1], [x * 13, y * 13]);
+                img.draw(ctx, rnd([x,y]) ? [5, 1] : [9, 0], [x * 13, y * 13]);
                 // borders
                 if (state.tiles.get(x - 1, y) != Tile.WALL) {
                     ctx.fillStyle = COLOURS.DARK;
@@ -59,7 +72,7 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State, time: number) 
                 img.draw(ctx, [7, 1], [x * 13, y * 13]);
                 break;
             case Tile.FLAG:
-                img.draw(ctx, [8, 0], [x * 13, y * 13]);
+                img.draw(ctx, [6 + Math.floor((time / 100)%4), 6], [x * 13, y * 13]);
                 break;
             case Tile.PLUS:
                 img.draw(ctx, [8, 1], [x * 13, y * 13 + Math.sin(time / 100 + x + y) * 1.5]);
