@@ -29,8 +29,6 @@ function onKey(key: string, down: boolean) {
         case "e":
             keys[Controls.CONFIRM] = down;
             break;
-        default:
-            console.log(key)
     }
     SOUND.resume();
 }

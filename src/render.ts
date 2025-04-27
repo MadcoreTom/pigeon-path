@@ -17,7 +17,7 @@ export function render(ctx: CanvasRenderingContext2D, state: State, time: number
         const y = state.path[bi][1] * u + state.path[ai][1] * (1 - u);
         img.draw(ctx, [6, 0], [x * 13, y * 13]); // TODO round or floor
     } else {
-        renderPath(ctx, state);
+        renderPath(ctx, state, time);
     }
 
     renderHud(ctx, state)
@@ -74,11 +74,16 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State, time: number) 
     });
 }
 
-function renderPath(ctx: CanvasRenderingContext2D, state: State) {
+function getFrame(time:number):XY{
+    let x = [0,0,0,1,2,3,3][Math.floor(time/150)%7]
+    return [6+x,5]
+}
+
+function renderPath(ctx: CanvasRenderingContext2D, state: State, time:number) {
     const ready = state.path.length == state.finalMoves;
     state.path.forEach((cur, idx) => {
         if (idx == 0) {
-            img.draw(ctx, [6, 0], [cur[0] * 13, cur[1] * 13]);
+            img.draw(ctx, getFrame(time), [cur[0] * 13, cur[1] * 13]);
             return;
         }
         const prev = state.path[Math.max(0, idx - 1)];

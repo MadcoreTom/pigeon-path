@@ -9,11 +9,16 @@ const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 initKeyboard();
 
 const state = initState();
-loadLevel(state,state.level)
+loadLevel(state, state.level)
+
+let lastFrameTime = 0;
+const MAX_FRAME_TIME = 100;
 
 function tick(time: number) {
+    const delta = Math.min(MAX_FRAME_TIME, time - lastFrameTime);
+    lastFrameTime = time;
     render(ctx, state, time);
-    update(state);
+    update(state, delta);
     window.requestAnimationFrame(tick);
 }
 

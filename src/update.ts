@@ -3,8 +3,8 @@ import { loadLevel } from "./levels";
 import { SOUND } from "./sound";
 import { State, Tile, XY } from "./world";
 
-export function update(state: State) {
-    if(state.moving == null){
+export function update(state: State, delta: number) {
+    if (state.moving == null) {
         let movement: null | XY = null;
         if (isKeyTyped(Controls.UP)) {
             movement = [0, -1];
@@ -27,26 +27,24 @@ export function update(state: State) {
             if (secondEnd && secondEnd[0] == newPos[0] && secondEnd[1] == newPos[1]) {
                 state.path.pop();
             } else if (state.path.length == state.finalMoves) {
-                console.log("max length")
+                SOUND.collide();
             } else {
                 const collides = state.tiles.get(newPos[0], newPos[1]) == Tile.WALL;
                 if (!collides) {
                     const needsToFinishOnThisTile = state.tiles.get(newPos[0], newPos[1]) == Tile.DOOR_CLOSED;
-                    if(needsToFinishOnThisTile && state.finalMoves != state.path.length +1 ){
-                        console.log("have to finish", newPos,state.finalMoves , state.path.length)
+                    if (needsToFinishOnThisTile && state.finalMoves != state.path.length + 1) {
                         SOUND.doorLocked();
                     } else {
                         state.path.push(newPos);
                         SOUND.move();
                     }
                 } else {
-                    console.log("collides", newPos)
                     SOUND.collide();
                 }
             }
         }
-        if (isKeyTyped(Controls.CONFIRM) ) {
-            if(state.path.length == state.finalMoves){
+        if (isKeyTyped(Controls.CONFIRM)) {
+            if (state.path.length == state.finalMoves) {
                 state.moving = 0;
                 SOUND.openDoor();
             } else {
@@ -55,16 +53,16 @@ export function update(state: State) {
         }
     } else {
         // moving
-        state.moving += 0.1;
+        state.moving += delta * 0.01;
         if (state.moving >= state.path.length) {
             state.moving = null;
             const end = state.path[state.path.length - 1];
             state.path = [end];
-            const tile = state.tiles.get(end[0],end[1]);
-            if(tile == Tile.DOOR_CLOSED){
+            const tile = state.tiles.get(end[0], end[1]);
+            if (tile == Tile.DOOR_CLOSED) {
                 SOUND.openDoor();
-                state.tiles.set(end[0],end[1], Tile.DOOR_OPENED);
-            } else if(tile == Tile.FLAG){
+                state.tiles.set(end[0], end[1], Tile.DOOR_OPENED);
+            } else if (tile == Tile.FLAG) {
                 SOUND.newLevel();
                 state.level++;
                 loadLevel(state, state.level);
@@ -77,11 +75,11 @@ export function update(state: State) {
 
 function calcMoves(state: State) {
     state.modifiers = [];
-    state.path.forEach(p=>{
-        const t = state.tiles.get(p[0],p[1]);
-        if(t == Tile.MULTIPLY){
+    state.path.forEach(p => {
+        const t = state.tiles.get(p[0], p[1]);
+        if (t == Tile.MULTIPLY) {
             state.modifiers.push("x")
-        } else if(t == Tile.PLUS){
+        } else if (t == Tile.PLUS) {
             state.modifiers.push("+")
         }
     })
