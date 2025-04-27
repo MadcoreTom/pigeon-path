@@ -9,7 +9,7 @@ const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 initKeyboard();
 
 const state = initState();
-loadLevel(state,"LEVEL1")
+loadLevel(state,state.level)
 
 function tick(time: number) {
     render(ctx, state, time);

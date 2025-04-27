@@ -2,30 +2,51 @@ import { State, Tile } from "./world"
 
 const LEVEL1 = `
 ####################
-####..........######
-####.s.....#.#.#####
-####............####
-####...x...#.#..####
-####............####
-####...x........####
+####################
+####################
+####################
+####################
+####################
+####################
+#####.....#...######
+#####.s...^...######
+#####.....#...######
+############x#######
+##!.########.#######
+###.###++.##.#######
+###.++^...^..#######
+#######...##########
+####################
+####################
+####################
+`
+
+const LEVEL2 = `
+####################
+####.......#########
+####.s.....###.#####
+####.......^x...####
+####...x...#....####
+#####......###^#####
+#####...........####
 ####............####
 ####......###...####
-####......###...####
+####..+...###...####
 ####............####
 ########^###########
 ######.....#.....###
 ######.....#.....###
-######..+..^..!..###
+######..+..^..!.+###
 ######.....#.....###
 ######.....#.....###
 ####################
 `
 
-const LEVELS = {
-    LEVEL1
-}
+const LEVELS = [
+    LEVEL1, LEVEL2
+]
 
-const CHAR_MAP:{[id:string]:Tile}={
+const CHAR_MAP: { [id: string]: Tile } = {
     "#": Tile.WALL,
     ".": Tile.EMPTY,
     "^": Tile.DOOR_CLOSED,
@@ -34,15 +55,15 @@ const CHAR_MAP:{[id:string]:Tile}={
     "+": Tile.PLUS
 }
 
-export function loadLevel(state:State, levelName: string){
-    const level = LEVELS[levelName];
-    if(level){
-        const lines = level.split(/[\r\n]+/).map(a=>a.trim()).filter(a=>a.length > 0);
-        lines.forEach((line,y)=>{
-            line.split("").forEach((char,x)=>{
-                state.tiles.set(x,y,CHAR_MAP[char] | Tile.EMPTY);
-                if(char == "s"){
-                    state.path = [[x,y]]
+export function loadLevel(state: State, levelNum: number) {
+    const level = LEVELS[levelNum % LEVELS.length];
+    if (level) {
+        const lines = level.split(/[\r\n]+/).map(a => a.trim()).filter(a => a.length > 0);
+        lines.forEach((line, y) => {
+            line.split("").forEach((char, x) => {
+                state.tiles.set(x, y, CHAR_MAP[char] | Tile.EMPTY);
+                if (char == "s") {
+                    state.path = [[x, y]]
                 }
             })
         })

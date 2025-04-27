@@ -1,3 +1,5 @@
+import { XY } from "./world";
+
 export class TileImage {
     private image: any;
     private ready = false;
@@ -13,12 +15,12 @@ export class TileImage {
         this.image.src = src;
     }
 
-    public draw(ctx: CanvasRenderingContext2D, tile: [number, number], pos: [number, number]) {
+    public draw(ctx: CanvasRenderingContext2D, tile: XY, pos: XY, [width,height]: XY = [1,1]) {
         if (this.ready) {
             const size = this.size;
             ctx.drawImage(this.image,
-                tile[0] * size, tile[1] * size, size, size,
-                Math.floor(pos[0]), Math.floor(pos[1]), size, size)
+                tile[0] * size, tile[1] * size, size*width, size*height,
+                Math.floor(pos[0]), Math.floor(pos[1]),  size*width, size*height)
         }
     }
 }

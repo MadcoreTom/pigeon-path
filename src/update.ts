@@ -1,4 +1,5 @@
 import { Controls, isKeyTyped } from "./controls";
+import { loadLevel } from "./levels";
 import { State, Tile, XY } from "./world";
 
 export function update(state: State) {
@@ -29,22 +30,34 @@ export function update(state: State) {
             } else {
                 const collides = state.tiles.get(newPos[0], newPos[1]) == Tile.WALL;
                 if (!collides) {
-                    state.path.push(newPos);
+                    const needsToFinishOnThisTile = state.tiles.get(newPos[0], newPos[1]) == Tile.DOOR_CLOSED;
+                    if(needsToFinishOnThisTile && state.finalMoves != state.path.length +1 ){
+                        console.log("have to finish", newPos,state.finalMoves , state.path.length)
+                    } else {
+                        state.path.push(newPos);
+                    }
                 } else {
                     console.log("collides", newPos)
                 }
             }
         }
-        if (isKeyTyped(Controls.CONFIRM)) {
+        if (isKeyTyped(Controls.CONFIRM) && state.path.length == state.finalMoves) {
             state.moving = 0;
         }
     } else {
         // moving
-        state.moving += 0.01;
-        if (state.moving >= 1) {
+        state.moving += 0.1;
+        if (state.moving >= state.path.length) {
             state.moving = null;
             const end = state.path[state.path.length - 1];
             state.path = [end];
+            const tile = state.tiles.get(end[0],end[1]);
+            if(tile == Tile.DOOR_CLOSED){
+                state.tiles.set(end[0],end[1], Tile.DOOR_OPENED);
+            } else if(tile == Tile.FLAG){
+                state.level++;
+                loadLevel(state, state.level);
+            }
         }
     }
 

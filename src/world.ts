@@ -5,6 +5,7 @@ export enum Tile {
     WALL,
     FLAG,
     DOOR_CLOSED,
+    DOOR_OPENED,
     PLUS,
     MULTIPLY
 }
@@ -17,7 +18,8 @@ export type State = {
     moving: null | number,
     moves: number,
     finalMoves: number,
-    modifiers: ("x"|"+")[]
+    modifiers: ("x"|"+")[],
+    level: number
 }
 
 export function initState(): State {
@@ -41,6 +43,7 @@ export function initState(): State {
         moving:null,
         moves: 5,
         finalMoves: 5,
-        modifiers: []
+        modifiers: [],
+        level: 0
     }
 }

@@ -10,9 +10,9 @@ export function render(ctx: CanvasRenderingContext2D, state: State, time: number
     renderTiles(ctx, state, time);
 
     if (state.moving) {
-        const ai = Math.floor(state.path.length * state.moving);
+        const ai = Math.floor(state.moving);
         const bi = Math.min(state.path.length - 1, ai + 1);
-        const u = state.path.length * state.moving - ai;
+        const u = state.moving - ai;
         const x = state.path[bi][0] * u + state.path[ai][0] * (1 - u);
         const y = state.path[bi][1] * u + state.path[ai][1] * (1 - u);
         img.draw(ctx, [6, 0], [x * 13, y * 13]); // TODO round or floor
@@ -20,11 +20,7 @@ export function render(ctx: CanvasRenderingContext2D, state: State, time: number
         renderPath(ctx, state);
     }
 
-    /// Draw length
-    ctx.fillStyle = COLOURS.LIGHT;
-    ctx.fillText("" + state.path.length, 2, 100)
-
-    renderHud(ctx,state)
+    renderHud(ctx, state)
 }
 
 function renderTiles(ctx: CanvasRenderingContext2D, state: State, time: number) {
@@ -61,6 +57,9 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State, time: number) 
             case Tile.DOOR_CLOSED:
                 img.draw(ctx, [6, 1], [x * 13, y * 13]);
                 break;
+            case Tile.DOOR_OPENED:
+                img.draw(ctx, [7, 1], [x * 13, y * 13]);
+                break;
             case Tile.FLAG:
                 img.draw(ctx, [8, 0], [x * 13, y * 13]);
                 break;
@@ -76,6 +75,7 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State, time: number) 
 }
 
 function renderPath(ctx: CanvasRenderingContext2D, state: State) {
+    const ready = state.path.length == state.finalMoves;
     state.path.forEach((cur, idx) => {
         if (idx == 0) {
             img.draw(ctx, [6, 0], [cur[0] * 13, cur[1] * 13]);
@@ -121,6 +121,10 @@ function renderPath(ctx: CanvasRenderingContext2D, state: State) {
             tile = [3, 0];
         }
 
+        if(ready){
+            tile[1]+=5;
+        }
+
         img.draw(ctx, tile, [cur[0] * 13, cur[1] * 13])
     });
 
@@ -129,26 +133,36 @@ function renderPath(ctx: CanvasRenderingContext2D, state: State) {
 
 function renderHud(ctx: CanvasRenderingContext2D, state: State) {
     ctx.fillStyle = COLOURS.DARK;
-    ctx.fillRect(0, HEIGHT - 13 * 2, WIDTH, 13*2);
+    ctx.fillRect(0, HEIGHT - 13 * 2, WIDTH, 13 * 2);
 
-    const len = renderNumber(ctx, state.moves, [2*13, 18*13]);
-    state.modifiers.forEach((m,x)=>{
-        const tile:XY = m == "+" ? [8,3] : [9,3];
-        img.draw(ctx, tile, [(2+len+x)*13,  18*13]);
-    });
-    img.draw(ctx, [7,3], [(2 + length + state.modifiers.length + 1)*13,  18*13]);
-    renderNumber(ctx, state.finalMoves, [(2 + length + state.modifiers.length + 2)*13, 18*13]);
+    // Calculated moves
+    let y = 18 * 13;
+    img.draw(ctx,[0,4],[0,y],[3,1])
+    let len = renderNumber(ctx, state.moves, [3 * 13, y]);
+    if(state.modifiers.length > 0){
+        state.modifiers.forEach((m, x) => {
+            const tile: XY = m == "+" ? [8, 3] : [9, 3];
+            img.draw(ctx, tile, [(3 + len + x) * 13, y]);
+        });
+        img.draw(ctx, [7, 3], [(3 + length + state.modifiers.length ) * 13, y]);
+        renderNumber(ctx, state.finalMoves, [(3 + length + state.modifiers.length + 1) * 13, y]);
+    }
 
-    renderNumber(ctx, state.path.length, [2*13, 19*13]);
+    y += 13;
+    img.draw(ctx,[3,4],[0,y],[3,1]);
+    length = renderNumber(ctx, state.path.length, [3 * 13, 19 * 13]);
+    if(state.finalMoves == state.path.length){
+        img.draw(ctx,[6,4],[(3 + length + 1)*13,y],[3,1]);
+    }
 }
 
 
-function renderNumber(ctx: CanvasRenderingContext2D, num: number, pos: XY):number {
+function renderNumber(ctx: CanvasRenderingContext2D, num: number, pos: XY): number {
     const chars = ("" + Math.floor(num)).split("");
 
     const offset = "0".charCodeAt(0);
     chars.forEach((char, x) => {
-        img.draw(ctx, [char.charCodeAt(0) - offset,2], [pos[0] + x*13, pos[1]]);
+        img.draw(ctx, [char.charCodeAt(0) - offset, 2], [pos[0] + x * 13, pos[1]]);
     });
     return chars.length;
 }
