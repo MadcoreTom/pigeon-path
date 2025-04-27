@@ -164,12 +164,17 @@ function renderHud(ctx: CanvasRenderingContext2D, state: State) {
         renderNumber(ctx, state.finalMoves, [(3 + length + state.modifiers.length + 1) * 13, y]);
     }
 
+    // path
     y += 13;
     img.draw(ctx,[3,4],[0,y],[3,1]);
     length = renderNumber(ctx, state.path.length, [3 * 13, 19 * 13]);
     if(state.finalMoves == state.path.length){
         img.draw(ctx,[6,4],[(3 + length + 1)*13,y],[3,1]);
     }
+
+    // level
+    img.draw(ctx,[0,3],[12*13,y],[3,1]);
+    length = renderNumber(ctx, state.level + 1, [15 * 13, 19 * 13]);
 }
 
 

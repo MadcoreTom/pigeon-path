@@ -26,6 +26,7 @@ export function update(state: State, delta: number) {
 
             if (secondEnd && secondEnd[0] == newPos[0] && secondEnd[1] == newPos[1]) {
                 state.path.pop();
+                SOUND.retreat();
             } else if (state.path.length == state.finalMoves) {
                 SOUND.collide();
             } else {

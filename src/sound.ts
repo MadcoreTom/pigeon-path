@@ -30,7 +30,7 @@ class Sound {
 
         this.gain = audioCtx.createGain();
         this.gain.gain.setValueAtTime(0, audioCtx.currentTime);
-        
+
         this.filter = audioCtx.createBiquadFilter();
         this.filter.type = "lowpass";
         this.filter.frequency.setValueAtTime(550, audioCtx.currentTime);
@@ -88,7 +88,11 @@ class Sound {
     }
 
     public move() {
-        this.beep(600, 0.05, -1);
+        this.beep(600, 0.04, -1);
+    }
+
+    public retreat() {
+        this.beep(400, 0.04, -1);
     }
 
     public collide() {
