@@ -4,7 +4,9 @@ import { isFinalLength, State, Tile, XY } from "./world";
 
 const WIDTH = 260;
 const HEIGHT = 260;
-const img = new TileImage("img.png", 13);
+const img = new TileImage("img.png", 13, {
+    title: [0,8,10,2]
+});
 
 export function render(ctx: CanvasRenderingContext2D, state: State, time: number) {
     renderTiles(ctx, state, time);
@@ -26,7 +28,7 @@ export function render(ctx: CanvasRenderingContext2D, state: State, time: number
         ctx.fillStyle = COLOURS.PRIMARY;
         const h=Math.floor(HEIGHT * state.mode.progress);
         ctx.fillRect(0,0,WIDTH,h);
-        img.draw(ctx,[0,8],[13*5, Math.floor(Math.min(HEIGHT/2,h - 13 * 2))],[10,2])
+        img.drawTile(ctx,[13*5, Math.floor(Math.min(HEIGHT/2,h - 13 * 2))],"title");
         img.draw(ctx,[6,0],[13*3.5, Math.floor(Math.min(HEIGHT/2 + 0.5 * 13,h - 13 *1.5))])
     }
 }

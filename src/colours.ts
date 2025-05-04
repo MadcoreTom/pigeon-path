@@ -14,9 +14,8 @@
 //     SECONDARY: "#ead762"
 // }
 
-// https://lospec.com/palette-list/mangavania
 export const COLOURS = {
-    DARK: "#b03e80",
+    DARK: "#1A1226",
     LIGHT: "#ffffff",
     PRIMARY: "#4aedff",
     SECONDARY: "#ff8acd"
