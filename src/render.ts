@@ -1,6 +1,6 @@
 import { COLOURS } from "./colours";
 import { TileImage } from "./img";
-import { State, Tile, XY } from "./world";
+import { isFinalLength, State, Tile, XY } from "./world";
 
 const WIDTH = 260;
 const HEIGHT = 260;
@@ -91,7 +91,7 @@ function getFrame(time:number):XY{
 }
 
 function renderPath(ctx: CanvasRenderingContext2D, state: State, time:number) {
-    const ready = state.path.length == state.finalMoves;
+    const ready = isFinalLength(state);
     state.path.forEach((cur, idx) => {
         if (idx == 0) {
             img.draw(ctx, getFrame(time), [cur[0] * 13, cur[1] * 13]);
@@ -167,8 +167,8 @@ function renderHud(ctx: CanvasRenderingContext2D, state: State) {
     // path
     y += 13;
     img.draw(ctx,[3,4],[0,y],[3,1]);
-    length = renderNumber(ctx, state.path.length, [3 * 13, 19 * 13]);
-    if(state.finalMoves == state.path.length){
+    length = renderNumber(ctx, state.path.length - 1, [3 * 13, 19 * 13]);
+    if(isFinalLength(state)){
         img.draw(ctx,[6,4],[(3 + length + 1)*13,y],[3,1]);
     }
 

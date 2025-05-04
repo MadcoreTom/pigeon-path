@@ -1,7 +1,7 @@
 import { Controls, isKeyTyped } from "./controls";
 import { loadLevel } from "./levels";
 import { SOUND } from "./sound";
-import { State, Tile, XY } from "./world";
+import { isFinalLength, isSecondFinalLength, State, Tile, XY } from "./world";
 
 export function update(state: State, delta: number) {
     if (state.mode.type == "play") {
@@ -25,15 +25,18 @@ export function update(state: State, delta: number) {
             const newPos: XY = [end[0] + movement[0], end[1] + movement[1]];
 
             if (secondEnd && secondEnd[0] == newPos[0] && secondEnd[1] == newPos[1]) {
+                // Backwards
                 state.path.pop();
                 SOUND.retreat();
-            } else if (state.path.length == state.finalMoves) {
+            } else if (isFinalLength(state)) {
+                // Max length
                 SOUND.collide();
             } else {
+                // push
                 const collides = state.tiles.get(newPos[0], newPos[1]) == Tile.WALL;
                 if (!collides) {
                     const needsToFinishOnThisTile = state.tiles.get(newPos[0], newPos[1]) == Tile.DOOR_CLOSED;
-                    if (needsToFinishOnThisTile && state.finalMoves != state.path.length + 1) {
+                    if (needsToFinishOnThisTile && !isSecondFinalLength(state)) {
                         SOUND.doorLocked();
                     } else {
                         state.path.push(newPos);
@@ -45,18 +48,18 @@ export function update(state: State, delta: number) {
             }
         }
         if (isKeyTyped(Controls.CONFIRM)) {
-            if (state.path.length == state.finalMoves) {
-                state.mode = {type:"moving", progress: 0};
+            if (isFinalLength(state)) {
+                state.mode = { type: "moving", progress: 0 };
                 SOUND.openDoor();
             } else {
                 SOUND.collide();
             }
         }
-    } else if(state.mode.type == "moving"){
+    } else if (state.mode.type == "moving") {
         // moving
         state.mode.progress += delta * 0.01;
         if (state.mode.progress >= state.path.length) {
-            state.mode = {type:"play"};
+            state.mode = { type: "play" };
             const end = state.path[state.path.length - 1];
             state.path = [end];
             const tile = state.tiles.get(end[0], end[1]);
@@ -65,7 +68,7 @@ export function update(state: State, delta: number) {
                 state.tiles.set(end[0], end[1], Tile.DOOR_OPENED);
             } else if (tile == Tile.FLAG) {
                 SOUND.newLevel();
-                state.mode = {type:"transition",progress:0, direction:"down",levelDelta:1};
+                state.mode = { type: "transition", progress: 0, direction: "down", levelDelta: 1 };
             }
         }
     } else if (state.mode.type == "transition") {
@@ -88,10 +91,9 @@ export function update(state: State, delta: number) {
 
     calcMoves(state);
     if (isKeyTyped(Controls.RESET)) {
-        state.mode = {type:"transition",progress:0, direction:"down",levelDelta:0};
+        state.mode = { type: "transition", progress: 0, direction: "down", levelDelta: 0 };
     }
 }
-
 function calcMoves(state: State) {
     state.modifiers = [];
     state.path.forEach(p => {

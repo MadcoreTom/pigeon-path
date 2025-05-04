@@ -43,9 +43,19 @@ export function initState(): State {
             [4, 0]
         ],
         mode: { type: "transition", direction: "up", progress: 2, levelDelta: 0 },
-        moves: 5,
-        finalMoves: 5,
+        moves: 4,
+        finalMoves: 4,
         modifiers: [],
         level: 0
     }
+}
+
+
+
+export function isFinalLength(state: State): boolean {
+    return state.path.length - 1 == state.finalMoves;
+}
+
+export function isSecondFinalLength(state: State): boolean {
+    return state.path.length - 1 == state.finalMoves - 1;
 }
