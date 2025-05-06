@@ -55,6 +55,10 @@ export function update(state: State, delta: number) {
                 SOUND.collide();
             }
         }
+        if(isKeyTyped(Controls.UNDO)){
+            state.path = [state.path[0]];
+            SOUND.retreat();
+        }
     } else if (state.mode.type == "moving") {
         // moving
         state.mode.progress += delta * 0.01;

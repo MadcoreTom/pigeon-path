@@ -26,6 +26,7 @@ Controls:
 
 * WASD or arrow keys to move around
 * Enter, E or Z to make your move (your path needs to match the available moves exactly)
+* Backspace, reset move
 * To open a door, you must land on it on your last move
 * To end the level, you must land on the flag on your last move
 * To restart the level, press Escape
