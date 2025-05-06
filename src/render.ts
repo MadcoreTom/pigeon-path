@@ -5,8 +5,17 @@ import { isFinalLength, State, Tile, XY } from "./world";
 const WIDTH = 260;
 const HEIGHT = 260;
 const img = new TileImage("img.png", 13, {
-    title: [0,8,10,2]
+    title: [0, 8, 10, 2],
+    blank: [5, 0],
+    speech_tl: [0, 10],
+    speech_tm: [1, 10],
+    speech_tr: [2, 10],
+    speech_bl: [0, 11],
+    speech_bm: [1, 11],
+    speech_br: [2, 11],
 });
+
+const smallText = new TileImage("dogica.png", 9, {});
 
 export function render(ctx: CanvasRenderingContext2D, state: State, time: number) {
     renderTiles(ctx, state, time);
@@ -24,17 +33,17 @@ export function render(ctx: CanvasRenderingContext2D, state: State, time: number
 
     renderHud(ctx, state);
 
-    if(state.mode.type == "transition"){
+    if (state.mode.type == "transition") {
         ctx.fillStyle = COLOURS.PRIMARY;
-        const h=Math.floor(HEIGHT * state.mode.progress);
-        ctx.fillRect(0,0,WIDTH,h);
-        img.drawTile(ctx,[13*5, Math.floor(Math.min(HEIGHT/2,h - 13 * 2))],"title");
-        img.draw(ctx,[6,0],[13*3.5, Math.floor(Math.min(HEIGHT/2 + 0.5 * 13,h - 13 *1.5))])
+        const h = Math.floor(HEIGHT * state.mode.progress);
+        ctx.fillRect(0, 0, WIDTH, h);
+        img.drawTile(ctx, [13 * 5, Math.floor(Math.min(HEIGHT / 2, h - 13 * 2))], "title");
+        img.draw(ctx, [6, 0], [13 * 3.5, Math.floor(Math.min(HEIGHT / 2 + 0.5 * 13, h - 13 * 1.5))])
     }
 }
 
-function rnd([x,y]:XY):boolean {
-    return Math.floor(x *3 + y*2 + x * y + Math.sin(x*95.0))%2==0;
+function rnd([x, y]: XY): boolean {
+    return Math.floor(x * 3 + y * 2 + x * y + Math.sin(x * 95.0)) % 2 == 0;
 
 }
 
@@ -45,10 +54,10 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State, time: number) 
     state.tiles.forEach((x, y, t) => {
         switch (t) {
             case Tile.EMPTY:
-                img.draw(ctx, [5, 0], [x * 13, y * 13]);
+                img.drawTile(ctx, [x * 13, y * 13], "blank");
                 break;
             case Tile.WALL:
-                img.draw(ctx, rnd([x,y]) ? [5, 1] : [9, 0], [x * 13, y * 13]);
+                img.draw(ctx, rnd([x, y]) ? [5, 1] : [9, 0], [x * 13, y * 13]);
                 // borders
                 if (state.tiles.get(x - 1, y) != Tile.WALL) {
                     ctx.fillStyle = COLOURS.DARK;
@@ -74,12 +83,15 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State, time: number) 
                 img.draw(ctx, [7, 1], [x * 13, y * 13]);
                 break;
             case Tile.FLAG:
-                img.draw(ctx, [6 + Math.floor((time / 100)%4), 6], [x * 13, y * 13]);
+                img.drawTile(ctx, [x * 13, y * 13], "blank");
+                img.draw(ctx, [6 + Math.floor((time / 100) % 4), 6], [x * 13, y * 13]);
                 break;
             case Tile.PLUS:
+                img.drawTile(ctx, [x * 13, y * 13], "blank");
                 img.draw(ctx, [8, 1], [x * 13, y * 13 + Math.sin(time / 100 + x + y) * 1.5]);
                 break;
             case Tile.MULTIPLY:
+                img.drawTile(ctx, [x * 13, y * 13], "blank");
                 img.draw(ctx, [9, 1], [x * 13, y * 13 + Math.sin(time / 100 + x + y) * 1.5]);
                 break;
         }
@@ -87,12 +99,12 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State, time: number) 
     });
 }
 
-function getFrame(time:number):XY{
-    let x = [0,0,0,1,2,3,3][Math.floor(time/150)%7]
-    return [6+x,5]
+function getFrame(time: number): XY {
+    let x = [0, 0, 0, 1, 2, 3, 3][Math.floor(time / 150) % 7]
+    return [6 + x, 5]
 }
 
-function renderPath(ctx: CanvasRenderingContext2D, state: State, time:number) {
+function renderPath(ctx: CanvasRenderingContext2D, state: State, time: number) {
     const ready = isFinalLength(state);
     state.path.forEach((cur, idx) => {
         if (idx == 0) {
@@ -139,8 +151,8 @@ function renderPath(ctx: CanvasRenderingContext2D, state: State, time:number) {
             tile = [3, 0];
         }
 
-        if(ready){
-            tile[1]+=5;
+        if (ready) {
+            tile[1] += 5;
         }
 
         img.draw(ctx, tile, [cur[0] * 13, cur[1] * 13])
@@ -155,28 +167,38 @@ function renderHud(ctx: CanvasRenderingContext2D, state: State) {
 
     // Calculated moves
     let y = 18 * 13;
-    img.draw(ctx,[0,4],[0,y],[3,1])
+    img.draw(ctx, [0, 4], [0, y], [3, 1])
     let len = renderNumber(ctx, state.moves, [3 * 13, y]);
-    if(state.modifiers.length > 0){
+    if (state.modifiers.length > 0) {
         state.modifiers.forEach((m, x) => {
             const tile: XY = m == "+" ? [8, 3] : [9, 3];
             img.draw(ctx, tile, [(3 + len + x) * 13, y]);
         });
-        img.draw(ctx, [7, 3], [(3 + length + state.modifiers.length ) * 13, y]);
+        img.draw(ctx, [7, 3], [(3 + length + state.modifiers.length) * 13, y]);
         renderNumber(ctx, state.finalMoves, [(3 + length + state.modifiers.length + 1) * 13, y]);
     }
 
     // path
     y += 13;
-    img.draw(ctx,[3,4],[0,y],[3,1]);
+    img.draw(ctx, [3, 4], [0, y], [3, 1]);
     length = renderNumber(ctx, state.path.length - 1, [3 * 13, 19 * 13]);
-    if(isFinalLength(state)){
-        img.draw(ctx,[6,4],[(3 + length + 1)*13,y],[3,1]);
+    if (isFinalLength(state)) {
+        img.draw(ctx, [6, 4], [(3 + length + 1) * 13, y], [3, 1]);
     }
 
     // level
-    img.draw(ctx,[0,3],[12*13,y],[3,1]);
+    img.draw(ctx, [0, 3], [12 * 13, y], [3, 1]);
     length = renderNumber(ctx, state.level + 1, [15 * 13, 19 * 13]);
+
+    // Remaining
+    const end = state.path[state.path.length - 1];
+    let txt = "Go!";
+    if(state.path.length ==1){
+        txt = "Move";
+    }else     if (state.finalMoves + 1 - state.path.length > 0) {
+        txt = "" + (state.finalMoves + 1 - state.path.length);
+    }
+    renderSpeechBubble(ctx, [end[0] * 13 + 8, end[1] * 13+2], txt);
 }
 
 
@@ -188,4 +210,19 @@ function renderNumber(ctx: CanvasRenderingContext2D, num: number, pos: XY): numb
         img.draw(ctx, [char.charCodeAt(0) - offset, 2], [pos[0] + x * 13, pos[1]]);
     });
     return chars.length;
+}
+
+function renderSpeechBubble(ctx: CanvasRenderingContext2D, pos: XY, text: string) {
+    img.drawTile(ctx, [pos[0], pos[1] - 26], "speech_tl");
+    img.drawTile(ctx, [pos[0], pos[1] - 13], "speech_bl");
+    // Variable width
+    const w = Math.max(0,text.length-1);
+    for (let x = 0; x < w; x++) {
+        img.drawTile(ctx, [pos[0] + x *9 + 13, pos[1] - 26], "speech_tm");
+        img.drawTile(ctx, [pos[0] + x *9+ 13, pos[1] - 13], "speech_bm");
+    }
+    img.drawTile(ctx, [pos[0] +13+  w*9, pos[1] - 26], "speech_tr");
+    img.drawTile(ctx, [pos[0] +13+  w*9, pos[1] - 13], "speech_br");
+
+    smallText.drawString(ctx, [pos[0] + 7, pos[1] - 21], text);
 }

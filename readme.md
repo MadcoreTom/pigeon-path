@@ -41,8 +41,8 @@ FAQ:
 
 ## Resources
 
-* Fint based on https://www.dafont.com/bestime.font?text=0+1+2+3+4+5+6+7+8+9
-
+* Big font based on https://www.dafont.com/bestime.font?text=0+1+2+3+4+5+6+7+8+9
+* Small font based on https://www.dafont.com/dogica.font
 ## Other features I could add
 
 * ✅ reset button, in case the palyer softlocks themselves

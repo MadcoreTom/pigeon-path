@@ -39,4 +39,11 @@ export class TileImage<K extends string> {
         }
 
     }
+
+    public drawString(ctx: CanvasRenderingContext2D, pos: XY, text: string) {
+        for (let i = 0; i < text.length; i++) {
+            const t = text.charCodeAt(i) - 32;
+            this.draw(ctx, [t % this.cols, Math.floor(t / this.cols)], [pos[0] + i * this.size, pos[1]]);
+        }
+    }
 }
