@@ -191,14 +191,10 @@ function renderHud(ctx: CanvasRenderingContext2D, state: State) {
     length = renderNumber(ctx, state.level + 1, [15 * 13, 19 * 13]);
 
     // Remaining
-    const end = state.path[state.path.length - 1];
-    let txt = "Go!";
-    if(state.path.length ==1){
-        txt = "Move";
-    }else     if (state.finalMoves + 1 - state.path.length > 0) {
-        txt = "" + (state.finalMoves + 1 - state.path.length);
+    if (state.speechBubble) {
+        const end = state.path[state.path.length - 1];
+        renderSpeechBubble(ctx, [end[0] * 13 + 8, end[1] * 13 + 2], state.speechBubble);
     }
-    renderSpeechBubble(ctx, [end[0] * 13 + 8, end[1] * 13+2], txt);
 }
 
 

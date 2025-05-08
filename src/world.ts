@@ -21,7 +21,8 @@ export type State = {
     moves: number,
     finalMoves: number,
     modifiers: ("x" | "+")[],
-    level: number
+    level: number,
+    speechBubble:string | null
 }
 
 export function initState(): State {
@@ -46,7 +47,8 @@ export function initState(): State {
         moves: 4,
         finalMoves: 4,
         modifiers: [],
-        level: 0
+        level: 0,
+        speechBubble: null
     }
 }
 

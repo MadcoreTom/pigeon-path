@@ -59,7 +59,25 @@ export function update(state: State, delta: number) {
             state.path = [state.path[0]];
             SOUND.retreat();
         }
+
+        // speech bubble text
+        if (state.path.length == 1) {
+            state.speechBubble = "Move";
+        } else if (state.finalMoves + 1 - state.path.length > 0) {
+            state.speechBubble = "" + (state.finalMoves + 1 - state.path.length);
+        } else {
+            const end = state.path[state.path.length - 1];
+            const t = state.tiles.get(end[0], end[1]);
+            if (t == Tile.DOOR_CLOSED) {
+                state.speechBubble = "Open!"
+            } else if (t == Tile.FLAG) {
+                state.speechBubble = "Finish!"
+            } else {
+                state.speechBubble = "Go!"
+            }
+        }
     } else if (state.mode.type == "moving") {
+        state.speechBubble = null;
         // moving
         state.mode.progress += delta * 0.01;
         if (state.mode.progress >= state.path.length) {
@@ -76,6 +94,7 @@ export function update(state: State, delta: number) {
             }
         }
     } else if (state.mode.type == "transition") {
+        state.speechBubble = null;
         if (state.mode.direction == "down") {
             state.mode.progress += delta * 0.003;
             if (state.mode.progress > 1.5) {
