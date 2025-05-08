@@ -16,9 +16,9 @@
 
 export const COLOURS = {
     DARK: "#1A1226",
-    LIGHT: "#ffffff",
-    PRIMARY: "#4aedff",
-    SECONDARY: "#ff8acd"
+    LIGHT: "#F2FFFE",
+    PRIMARY: "#7FD66F",
+    SECONDARY: "#DE3A68"
 }
 
 //https://lospec.com/palette-list/singularity
