@@ -55,7 +55,7 @@ export function update(state: State, delta: number) {
                 SOUND.collide();
             }
         }
-        if(isKeyTyped(Controls.UNDO)){
+        if (isKeyTyped(Controls.UNDO)) {
             state.path = [state.path[0]];
             SOUND.retreat();
         }
@@ -81,7 +81,7 @@ export function update(state: State, delta: number) {
         // moving
         state.mode.progress += delta * 0.01;
         if (state.mode.progress >= state.path.length) {
-            state.mode = { type: "play" };
+            state.mode = { type: "entities", time: 0 };
             const end = state.path[state.path.length - 1];
             state.path = [end];
             const tile = state.tiles.get(end[0], end[1]);
@@ -92,6 +92,59 @@ export function update(state: State, delta: number) {
                 SOUND.newLevel();
                 state.mode = { type: "transition", progress: 0, direction: "down", levelDelta: 1 };
             }
+        }
+    } else if (state.mode.type == "entities") {
+        let step = false;
+        state.mode.time += delta / 200;
+        if (state.mode.time >= 1) {
+            state.mode.time -= 1;
+            step = true;
+            console.log("step")
+        }
+        let finished = true;
+        state.entities.forEach(e=>{
+            if(step && e.path.length > 0){
+                e.path.shift();
+            }
+            if(e.path.length > 1 && state.mode.type == "entities"){
+                const v = 1-state.mode.time;
+                const i = 1;
+                e.pos[0] = state.mode.time * e.path[i][0] + v * e.path[i-1][0];
+                e.pos[1] = state.mode.time * e.path[i][1] + v * e.path[i-1][1];
+                finished = false;
+            }
+        })
+        if (finished) {
+            console.log("finished");
+            // calculate path here
+            state.entities.forEach(e=>{
+                e.pos[0] = e.path[0][0];
+                e.pos[1] = e.path[0][1];
+                if (e.type == "vertical") {
+                    for (let i = 0, tries=0; i < 2&& tries<10; i++, tries++) {
+                        const end = e.path[e.path.length - 1];
+                        const up = state.tiles.get(end[0], end[1] - 1);
+                        const down = state.tiles.get(end[0], end[1] + 1);
+                        console.log(up,down)
+                        if (e.down) {
+                            if (down == Tile.EMPTY) {
+                                e.path.push([end[0], end[1] + 1]);
+                            } else {
+                                e.down = false;
+                                i--;
+                            }
+                        } else if (!e.down) {
+                            if (up == Tile.EMPTY) {
+                                e.path.push([end[0], end[1] - 1]);
+                            } else {
+                                e.down = true;
+                                i--;
+                            }
+                        }
+                    }
+                }
+            })
+            state.mode = { type: "play" };
         }
     } else if (state.mode.type == "transition") {
         state.speechBubble = null;

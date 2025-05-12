@@ -52,3 +52,18 @@ FAQ:
 * track the number of turns, and have a par
 * imps that move left/right or up/down each turn
 * Different palettes
+
+## Item System idea
+
+You can pick up an item as you pass over it
+
+if you pick up a second item, the first one is dropped
+
+you can use the item on tiles you end on
+
+items
+* hammer - breaks rocks
+* key - opens door
+* boat - can cross water
+* sword - kills baddies
+* shield - doesn't get hut by baddies

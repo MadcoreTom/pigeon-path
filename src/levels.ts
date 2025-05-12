@@ -219,4 +219,18 @@ export function loadLevel(state: State, levelNum: number) {
             })
         })
     }
+
+    state.entities = [];
+    let placed = false;
+    state.tiles.forEach((x,y,v)=>{
+        if(!placed && v == Tile.EMPTY){
+            state.entities.push({
+                type:"vertical",
+                down: true,
+                pos: [x,y],
+                path: [[x,y],[x+1,y],[x+1,y+1]]
+            })
+            placed = true;
+        }
+    })
 }

@@ -12,7 +12,17 @@ export enum Tile {
 
 export type XY = [number, number];
 
-export type Mode = { type: "play" } | { type: "moving", progress: number } | { type: "transition", direction: "up" | "down", progress: number, levelDelta: number }
+export type Mode = { type: "play" } | 
+{ type: "moving", progress: number } |
+{ type: "transition", direction: "up" | "down", progress: number, levelDelta: number } | 
+{ type: "entities", time:number}
+
+export type Entity = {
+    type: "vertical",
+    down: boolean,
+    pos: XY,
+    path: XY[]
+}
 
 export type State = {
     tiles: Arr2<Tile>,
@@ -22,7 +32,8 @@ export type State = {
     finalMoves: number,
     modifiers: ("x" | "+")[],
     level: number,
-    speechBubble:string | null
+    speechBubble:string | null,
+    entities: Entity[]
 }
 
 export function initState(): State {
@@ -48,7 +59,8 @@ export function initState(): State {
         finalMoves: 4,
         modifiers: [],
         level: 0,
-        speechBubble: null
+        speechBubble: null,
+        entities: []
     }
 }
 

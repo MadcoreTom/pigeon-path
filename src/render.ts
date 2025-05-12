@@ -20,6 +20,11 @@ const smallText = new TileImage("dogica.png", 9, {});
 export function render(ctx: CanvasRenderingContext2D, state: State, time: number) {
     renderTiles(ctx, state, time);
 
+    state.entities.forEach(e=>{
+        renderPath(ctx, e.path, time, 12);
+        img.draw(ctx,[7,0],[e.pos[0]*13,e.pos[1]*13]);
+    })
+
     if (state.mode.type == "moving") {
         const ai = Math.floor(state.mode.progress);
         const bi = Math.min(state.path.length - 1, ai + 1);
@@ -28,7 +33,8 @@ export function render(ctx: CanvasRenderingContext2D, state: State, time: number
         const y = state.path[bi][1] * u + state.path[ai][1] * (1 - u);
         img.draw(ctx, [6, 0], [x * 13, y * 13]); // TODO round or floor
     } else {
-        renderPath(ctx, state, time);
+        renderPath(ctx, state.path, time, isFinalLength(state) ? 5 : 0);
+        img.draw(ctx, getFrame(time), [state.path[0][0] * 13, state.path[0][1] * 13]);
     }
 
     renderHud(ctx, state);
@@ -104,15 +110,13 @@ function getFrame(time: number): XY {
     return [6 + x, 5]
 }
 
-function renderPath(ctx: CanvasRenderingContext2D, state: State, time: number) {
-    const ready = isFinalLength(state);
-    state.path.forEach((cur, idx) => {
+function renderPath(ctx: CanvasRenderingContext2D, path: XY[], time: number, tileYOffset:number) {
+    path.forEach((cur, idx) => {
         if (idx == 0) {
-            img.draw(ctx, getFrame(time), [cur[0] * 13, cur[1] * 13]);
             return;
         }
-        const prev = state.path[Math.max(0, idx - 1)];
-        const next = state.path[Math.min(state.path.length - 1, idx + 1)];
+        const prev = path[Math.max(0, idx - 1)];
+        const next = path[Math.min(path.length - 1, idx + 1)];
         const dx1 = prev[0] - cur[0];
         const dx2 = next[0] - cur[0];
         const dy1 = prev[1] - cur[1];
@@ -151,9 +155,8 @@ function renderPath(ctx: CanvasRenderingContext2D, state: State, time: number) {
             tile = [3, 0];
         }
 
-        if (ready) {
-            tile[1] += 5;
-        }
+            tile[1] += tileYOffset;
+      
 
         img.draw(ctx, tile, [cur[0] * 13, cur[1] * 13])
     });
