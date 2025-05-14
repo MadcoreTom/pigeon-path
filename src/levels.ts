@@ -1,5 +1,27 @@
 import { State, Tile } from "./world"
 
+
+const LEVEL_ENEMY = `
+####################
+######.#############
+######..############
+######...###########
+######....##########
+######.....#########
+######.....#########
+##...#.....#####...#
+##.s.............!.#
+##...#AAAAA#####...#
+####################
+####################
+####################
+####################
+####################
+####################
+####################
+####################
+`
+
 const LEVEL1 = `
 ####################
 ####################
@@ -13,7 +35,7 @@ const LEVEL1 = `
 #####.....#....#####
 ##############x#####
 ###!.#########.#####
-####.###++.###.#####
+####.###++.###A#####
 ####.++^.#.^...#####
 ########...#########
 ####################
@@ -28,15 +50,15 @@ const LEVEL2 = `
 ####.......^x...####
 ####...x...#....####
 #####......###^#####
-#####...........####
+#####..........A####
 ####............####
 ####......###...####
-####..+...###...####
+####A.+...###...####
 ####............####
 ########^###########
 ######.....#.....###
 ######.....#.....###
-######..+..^..!.+###
+######.A+..^..!.+###
 ######.....#.....###
 ######.....#.....###
 ####################
@@ -192,6 +214,7 @@ const ROOMS = `
 `
 
 const LEVELS = [
+    LEVEL_ENEMY,
    LEVEL1, LEVEL2, ROOMS,LOOPS, LEVEL4, LEVEL5, LEVEL6, 
 //    LEVEL7,
    LEVEL3, END
@@ -208,6 +231,7 @@ const CHAR_MAP: { [id: string]: Tile } = {
 
 export function loadLevel(state: State, levelNum: number) {
     const level = LEVELS[levelNum % LEVELS.length];
+    state.entities = [];
     if (level) {
         const lines = level.split(/[\r\n]+/).map(a => a.trim()).filter(a => a.length > 0);
         lines.forEach((line, y) => {
@@ -216,21 +240,15 @@ export function loadLevel(state: State, levelNum: number) {
                 if (char == "s") {
                     state.path = [[x, y]]
                 }
+                if (char == "A") {
+                    state.entities.push({
+                        type: "vertical",
+                        down: true,
+                        path: [[x,y]],
+                        pos: [x, y]
+                    });
+                }
             })
         })
     }
-
-    state.entities = [];
-    let placed = false;
-    state.tiles.forEach((x,y,v)=>{
-        if(!placed && v == Tile.EMPTY){
-            state.entities.push({
-                type:"vertical",
-                down: true,
-                pos: [x,y],
-                path: [[x,y],[x+1,y],[x+1,y+1]]
-            })
-            placed = true;
-        }
-    })
 }

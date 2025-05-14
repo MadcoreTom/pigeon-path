@@ -33,7 +33,7 @@ export function render(ctx: CanvasRenderingContext2D, state: State, time: number
         const y = state.path[bi][1] * u + state.path[ai][1] * (1 - u);
         img.draw(ctx, [6, 0], [x * 13, y * 13]); // TODO round or floor
     } else {
-        renderPath(ctx, state.path, time, isFinalLength(state) ? 5 : 0);
+        renderPath(ctx, state.path, time, state.canMove ? 5 : 0);
         img.draw(ctx, getFrame(time), [state.path[0][0] * 13, state.path[0][1] * 13]);
     }
 
@@ -185,13 +185,9 @@ function renderHud(ctx: CanvasRenderingContext2D, state: State) {
     y += 13;
     img.draw(ctx, [3, 4], [0, y], [3, 1]);
     length = renderNumber(ctx, state.path.length - 1, [3 * 13, 19 * 13]);
-    if (isFinalLength(state)) {
+    if (state.canMove) {
         img.draw(ctx, [6, 4], [(3 + length + 1) * 13, y], [3, 1]);
     }
-
-    // level
-    img.draw(ctx, [0, 3], [12 * 13, y], [3, 1]);
-    length = renderNumber(ctx, state.level + 1, [15 * 13, 19 * 13]);
 
     // Remaining
     if (state.speechBubble) {

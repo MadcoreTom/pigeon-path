@@ -33,7 +33,7 @@ export function update(state: State, delta: number) {
                 SOUND.collide();
             } else {
                 // push
-                const collides = state.tiles.get(newPos[0], newPos[1]) == Tile.WALL;
+                const collides = state.tiles.get(newPos[0], newPos[1]) == Tile.WALL || state.entities.filter(e=>e.pos[0] == newPos[0] && e.pos[1] == newPos[1]).length > 0;
                 if (!collides) {
                     const needsToFinishOnThisTile = state.tiles.get(newPos[0], newPos[1]) == Tile.DOOR_CLOSED;
                     if (needsToFinishOnThisTile && !isSecondFinalLength(state)) {
@@ -48,7 +48,7 @@ export function update(state: State, delta: number) {
             }
         }
         if (isKeyTyped(Controls.CONFIRM)) {
-            if (isFinalLength(state)) {
+            if (state.canMove) {
                 state.mode = { type: "moving", progress: 0 };
                 SOUND.openDoor();
             } else {
@@ -61,6 +61,7 @@ export function update(state: State, delta: number) {
         }
 
         // speech bubble text
+        state.canMove = false;
         if (state.path.length == 1) {
             state.speechBubble = "Move";
         } else if (state.finalMoves + 1 - state.path.length > 0) {
@@ -68,12 +69,19 @@ export function update(state: State, delta: number) {
         } else {
             const end = state.path[state.path.length - 1];
             const t = state.tiles.get(end[0], end[1]);
-            if (t == Tile.DOOR_CLOSED) {
+            // true if the end position is any positions of the paths of any entities
+            const badStop = state.entities.filter(e => e.path.filter(p => p[0] == end[0] && p[1] == end[1]).length > 0).length > 0;
+            if (badStop) {
+                state.speechBubble = "Can't move here!";
+            } else if (t == Tile.DOOR_CLOSED) {
                 state.speechBubble = "Open!"
+                state.canMove = true;
             } else if (t == Tile.FLAG) {
                 state.speechBubble = "Finish!"
+                state.canMove = true;
             } else {
                 state.speechBubble = "Go!"
+                state.canMove = true;
             }
         }
     } else if (state.mode.type == "moving") {
@@ -102,48 +110,22 @@ export function update(state: State, delta: number) {
             console.log("step")
         }
         let finished = true;
-        state.entities.forEach(e=>{
-            if(step && e.path.length > 0){
+        state.entities.forEach(e => {
+            if (step && e.path.length > 0) {
                 e.path.shift();
             }
-            if(e.path.length > 1 && state.mode.type == "entities"){
-                const v = 1-state.mode.time;
+            if (e.path.length > 1 && state.mode.type == "entities") {
+                const v = 1 - state.mode.time;
                 const i = 1;
-                e.pos[0] = state.mode.time * e.path[i][0] + v * e.path[i-1][0];
-                e.pos[1] = state.mode.time * e.path[i][1] + v * e.path[i-1][1];
+                e.pos[0] = state.mode.time * e.path[i][0] + v * e.path[i - 1][0];
+                e.pos[1] = state.mode.time * e.path[i][1] + v * e.path[i - 1][1];
                 finished = false;
             }
         })
         if (finished) {
             console.log("finished");
             // calculate path here
-            state.entities.forEach(e=>{
-                e.pos[0] = e.path[0][0];
-                e.pos[1] = e.path[0][1];
-                if (e.type == "vertical") {
-                    for (let i = 0, tries=0; i < 2&& tries<10; i++, tries++) {
-                        const end = e.path[e.path.length - 1];
-                        const up = state.tiles.get(end[0], end[1] - 1);
-                        const down = state.tiles.get(end[0], end[1] + 1);
-                        console.log(up,down)
-                        if (e.down) {
-                            if (down == Tile.EMPTY) {
-                                e.path.push([end[0], end[1] + 1]);
-                            } else {
-                                e.down = false;
-                                i--;
-                            }
-                        } else if (!e.down) {
-                            if (up == Tile.EMPTY) {
-                                e.path.push([end[0], end[1] - 1]);
-                            } else {
-                                e.down = true;
-                                i--;
-                            }
-                        }
-                    }
-                }
-            })
+            calcEntityPath(state);
             state.mode = { type: "play" };
         }
     } else if (state.mode.type == "transition") {
@@ -160,6 +142,7 @@ export function update(state: State, delta: number) {
             state.mode.progress -= delta * 0.003;
             if (state.mode.progress < 0) {
                 state.mode = { type: "play" }
+                calcEntityPath(state);
             }
 
         }
@@ -170,6 +153,37 @@ export function update(state: State, delta: number) {
         state.mode = { type: "transition", progress: 0, direction: "down", levelDelta: 0 };
     }
 }
+
+function calcEntityPath(state: State) {
+    state.entities.forEach(e => {
+        e.pos[0] = e.path[0][0];
+        e.pos[1] = e.path[0][1];
+        if (e.type == "vertical") {
+            for (let i = 0, tries = 0; i < 3 && tries < 10; i++, tries++) {
+                const end = e.path[e.path.length - 1];
+                const up = state.tiles.get(end[0], end[1] - 1);
+                const down = state.tiles.get(end[0], end[1] + 1);
+                console.log(up, down)
+                if (e.down) {
+                    if (down != Tile.WALL && down != Tile.DOOR_CLOSED) {
+                        e.path.push([end[0], end[1] + 1]);
+                    } else {
+                        e.down = false;
+                        i--;
+                    }
+                } else if (!e.down) {
+                    if (up != Tile.WALL && up != Tile.DOOR_CLOSED) {
+                        e.path.push([end[0], end[1] - 1]);
+                    } else {
+                        e.down = true;
+                        i--;
+                    }
+                }
+            }
+        }
+    })
+}
+
 function calcMoves(state: State) {
     state.modifiers = [];
     state.path.forEach(p => {

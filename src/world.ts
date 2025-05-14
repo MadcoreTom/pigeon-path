@@ -33,7 +33,8 @@ export type State = {
     modifiers: ("x" | "+")[],
     level: number,
     speechBubble:string | null,
-    entities: Entity[]
+    entities: Entity[],
+    canMove: boolean
 }
 
 export function initState(): State {
@@ -60,7 +61,8 @@ export function initState(): State {
         modifiers: [],
         level: 0,
         speechBubble: null,
-        entities: []
+        entities: [],
+        canMove: false
     }
 }
 
