@@ -1,3 +1,4 @@
+import { Arr2 } from "./arr2";
 import { COLOURS } from "./colours";
 import { TileImage } from "./img";
 import { isFinalLength, State, Tile, XY } from "./world";
@@ -18,11 +19,16 @@ const img = new TileImage("img.png", 13, {
 const smallText = new TileImage("dogica.png", 9, {});
 
 export function render(ctx: CanvasRenderingContext2D, state: State, time: number) {
-    renderTiles(ctx, state, time);
 
-    state.entities.forEach(e=>{
+    if (state.mode.type == "editor") {
+        renderEditor(ctx, state, time);
+        return;
+    }
+    renderTiles(ctx, state.tiles, time);
+
+    state.entities.forEach(e => {
         renderPath(ctx, e.path, time, 12);
-        img.draw(ctx,[7,0],[e.pos[0]*13,e.pos[1]*13]);
+        img.draw(ctx, [7, 0], [e.pos[0] * 13, e.pos[1] * 13]);
     })
 
     if (state.mode.type == "moving") {
@@ -48,16 +54,27 @@ export function render(ctx: CanvasRenderingContext2D, state: State, time: number
     }
 }
 
+function renderEditor(ctx: CanvasRenderingContext2D, state: State, time: number) {
+    if (state.mode.type != "editor") {
+        return;
+    }
+    renderTiles(ctx, state.editor.tiles, time);
+    if (time % 1000 < 500) {
+        smallText.drawString(ctx, [0, 0], "Editor Mode");
+    }
+    renderSpeechBubble(ctx, [state.mouse.pos[0], state.mouse.pos[1]], Tile[state.mode.tile]);
+}
+
 function rnd([x, y]: XY): boolean {
     return Math.floor(x * 3 + y * 2 + x * y + Math.sin(x * 95.0)) % 2 == 0;
 
 }
 
-function renderTiles(ctx: CanvasRenderingContext2D, state: State, time: number) {
+function renderTiles(ctx: CanvasRenderingContext2D, tiles: Arr2<Tile>, time: number) {
     ctx.fillStyle = COLOURS.SECONDARY;
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    state.tiles.forEach((x, y, t) => {
+    tiles.forEach((x, y, t) => {
         switch (t) {
             case Tile.EMPTY:
                 img.drawTile(ctx, [x * 13, y * 13], "blank");
@@ -65,19 +82,19 @@ function renderTiles(ctx: CanvasRenderingContext2D, state: State, time: number) 
             case Tile.WALL:
                 img.draw(ctx, rnd([x, y]) ? [5, 1] : [9, 0], [x * 13, y * 13]);
                 // borders
-                if (state.tiles.get(x - 1, y) != Tile.WALL) {
+                if (tiles.get(x - 1, y) != Tile.WALL) {
                     ctx.fillStyle = COLOURS.DARK;
                     ctx.fillRect(x * 13, y * 13, 1, 13);
                 }
-                if (state.tiles.get(x + 1, y) != Tile.WALL) {
+                if (tiles.get(x + 1, y) != Tile.WALL) {
                     ctx.fillStyle = COLOURS.DARK;
                     ctx.fillRect(x * 13 + 12, y * 13, 1, 13);
                 }
-                if (state.tiles.get(x, y - 1) != Tile.WALL) {
+                if (tiles.get(x, y - 1) != Tile.WALL) {
                     ctx.fillStyle = COLOURS.DARK;
                     ctx.fillRect(x * 13, y * 13, 13, 1);
                 }
-                if (state.tiles.get(x, y + 1) != Tile.WALL) {
+                if (tiles.get(x, y + 1) != Tile.WALL) {
                     ctx.fillStyle = COLOURS.DARK;
                     ctx.fillRect(x * 13, y * 13 + 12, 13, 1);
                 }
@@ -110,7 +127,7 @@ function getFrame(time: number): XY {
     return [6 + x, 5]
 }
 
-function renderPath(ctx: CanvasRenderingContext2D, path: XY[], time: number, tileYOffset:number) {
+function renderPath(ctx: CanvasRenderingContext2D, path: XY[], time: number, tileYOffset: number) {
     path.forEach((cur, idx) => {
         if (idx == 0) {
             return;
@@ -155,8 +172,8 @@ function renderPath(ctx: CanvasRenderingContext2D, path: XY[], time: number, til
             tile = [3, 0];
         }
 
-            tile[1] += tileYOffset;
-      
+        tile[1] += tileYOffset;
+
 
         img.draw(ctx, tile, [cur[0] * 13, cur[1] * 13])
     });
@@ -211,13 +228,13 @@ function renderSpeechBubble(ctx: CanvasRenderingContext2D, pos: XY, text: string
     img.drawTile(ctx, [pos[0], pos[1] - 26], "speech_tl");
     img.drawTile(ctx, [pos[0], pos[1] - 13], "speech_bl");
     // Variable width
-    const w = Math.max(0,text.length-1);
+    const w = Math.max(0, text.length - 1);
     for (let x = 0; x < w; x++) {
-        img.drawTile(ctx, [pos[0] + x *9 + 13, pos[1] - 26], "speech_tm");
-        img.drawTile(ctx, [pos[0] + x *9+ 13, pos[1] - 13], "speech_bm");
+        img.drawTile(ctx, [pos[0] + x * 9 + 13, pos[1] - 26], "speech_tm");
+        img.drawTile(ctx, [pos[0] + x * 9 + 13, pos[1] - 13], "speech_bm");
     }
-    img.drawTile(ctx, [pos[0] +13+  w*9, pos[1] - 26], "speech_tr");
-    img.drawTile(ctx, [pos[0] +13+  w*9, pos[1] - 13], "speech_br");
+    img.drawTile(ctx, [pos[0] + 13 + w * 9, pos[1] - 26], "speech_tr");
+    img.drawTile(ctx, [pos[0] + 13 + w * 9, pos[1] - 13], "speech_br");
 
     smallText.drawString(ctx, [pos[0] + 7, pos[1] - 21], text);
 }

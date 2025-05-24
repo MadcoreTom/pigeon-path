@@ -15,7 +15,8 @@ export type XY = [number, number];
 export type Mode = { type: "play" } | 
 { type: "moving", progress: number } |
 { type: "transition", direction: "up" | "down", progress: number, levelDelta: number } | 
-{ type: "entities", time:number}
+{ type: "entities", time:number} | 
+{ type: "editor", tile: Tile}
 
 export type Entity = {
     type: "vertical",
@@ -34,13 +35,23 @@ export type State = {
     level: number,
     speechBubble:string | null,
     entities: Entity[],
-    canMove: boolean
+    canMove: boolean,
+    editor:{
+        tiles: Arr2<Tile>
+    },
+    mouse: {
+        pos:XY,
+        clicked: boolean,
+        rightClicked: boolean
+    }
 }
 
 export function initState(): State {
     const tiles = new Arr2(20, 20, Tile.WALL);
-
     tiles.fill((x, y) => x > 11 && Math.random() > y / 20 ? Tile.WALL : Tile.EMPTY);
+
+    const editor = new Arr2(20, 20, Tile.WALL);
+    editor.fill((x, y) => x > 11 && Math.random() > y / 20 ? Tile.WALL : Tile.EMPTY);
 
     return {
         tiles,
@@ -55,14 +66,23 @@ export function initState(): State {
             [4, 1],
             [4, 0]
         ],
-        mode: { type: "transition", direction: "up", progress: 2, levelDelta: 0 },
+        // mode: { type: "transition", direction: "up", progress: 2, levelDelta: 0 },
+        mode: {type:"editor", tile:Tile.WALL},
         moves: 4,
         finalMoves: 4,
         modifiers: [],
         level: 0,
         speechBubble: null,
         entities: [],
-        canMove: false
+        canMove: false,
+        editor:{
+            tiles: editor
+        },
+        mouse: {
+            pos:[0,0],
+            clicked:false,
+            rightClicked: false
+        }
     }
 }
 

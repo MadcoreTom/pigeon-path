@@ -1,14 +1,16 @@
-import { initKeyboard } from "./controls";
+import { initKeyboard, initMouse } from "./controls";
 import { loadLevel } from "./levels";
 import { render } from "./render";
 import { update } from "./update";
 import { initState } from "./world";
 
+const state = initState();
+
 const canvas = document.querySelector("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 initKeyboard();
+initMouse(canvas, state, 3);
 
-const state = initState();
 loadLevel(state, state.level)
 
 let lastFrameTime = 0;

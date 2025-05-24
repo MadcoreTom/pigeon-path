@@ -1,4 +1,5 @@
 import { SOUND } from "./sound";
+import { State } from "./world";
 
 export enum Controls {
     UP, DOWN, LEFT, RIGHT, CONFIRM, RESET, UNDO
@@ -52,4 +53,18 @@ export function isKeyTyped(control: Controls) {
     const tmp = !!keys[control];
     keys[control] = false;
     return tmp;
+}
+
+export function initMouse(canvas: HTMLElement, state: State, scale: number = 1) {
+
+    function setMouseButton(evt:MouseEvent, state:State, move:boolean = false){
+        state.mouse.clicked ||= (evt.buttons & 0x01) > 0;
+        if(!move){
+        state.mouse.rightClicked ||= (evt.buttons & 0x04) > 0;
+        }
+    }
+
+    canvas.addEventListener("mousemove", evt => { state.mouse.pos[0] = evt.offsetX / scale; state.mouse.pos[1] = evt.offsetY / scale ;setMouseButton(evt, state, true)});
+    canvas.addEventListener("drag", evt => { state.mouse.pos[0] = evt.offsetX / scale; state.mouse.pos[1] = evt.offsetY / scale; state.mouse.clicked = true; });
+    canvas.addEventListener("mousedown", evt => { setMouseButton(evt, state); });
 }

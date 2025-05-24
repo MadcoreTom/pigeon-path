@@ -4,6 +4,9 @@ import { SOUND } from "./sound";
 import { isFinalLength, isSecondFinalLength, State, Tile, XY } from "./world";
 
 export function update(state: State, delta: number) {
+    if(state.mode.type == "editor"){
+        updateEditor(state);
+    }
     if (state.mode.type == "play") {
         let movement: null | XY = null;
         if (isKeyTyped(Controls.UP)) {
@@ -203,4 +206,25 @@ function calcMoves(state: State) {
         }
     });
     state.finalMoves = m;
+}
+
+function updateEditor(state: State) {
+    if (state.mouse.clicked) {
+        state.mouse.clicked = false;
+        if (state.mode.type == "editor") {
+            const tx = Math.floor(state.mouse.pos[0] / 13);
+            const ty = Math.floor(state.mouse.pos[1] / 13);
+            if (state.editor.tiles.inRange(tx, ty)) {
+                state.editor.tiles.set(tx, ty, state.mode.tile);
+            }
+        }
+    }
+    if (state.mouse.rightClicked && state.mode.type == "editor") {
+        state.mouse.rightClicked = false;
+        const len = Object.values(Tile).filter(v => typeof v == "string").length;
+        const i: number = Tile[Tile[state.mode.tile]];
+        console.log(len)
+        const j = (i + 1) % len;
+        state.mode.tile = Tile[Tile[j]]
+    }
 }
