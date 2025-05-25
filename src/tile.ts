@@ -35,3 +35,10 @@ class Tiles {
 export const TILES = new Tiles();
 
 export type Tile = keyof Tiles;
+
+export const TILE_NAMES = Object.keys(TILES) as Tile[];
+
+export function getTileName(idx:number):Tile{
+    const i = (TILE_NAMES.length + (idx % TILE_NAMES.length))%TILE_NAMES.length;
+    return TILE_NAMES[i];
+}

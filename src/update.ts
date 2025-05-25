@@ -1,7 +1,7 @@
 import { Controls, isKeyTyped } from "./controls";
 import { loadLevel } from "./levels";
 import { SOUND } from "./sound";
-import { TILES } from "./tile";
+import { getTileName, TILES } from "./tile";
 import { isFinalLength, isSecondFinalLength, State, XY } from "./world";
 
 export function update(state: State, delta: number) {
@@ -217,7 +217,7 @@ function updateEditor(state: State) {
             const tx = Math.floor(state.mouse.pos[0] / 13);
             const ty = Math.floor(state.mouse.pos[1] / 13);
             if (state.editor.tiles.inRange(tx, ty)) {
-                state.editor.tiles.set(tx, ty, state.mode.tile);
+                state.editor.tiles.set(tx, ty, getTileName(state.mouse.scroll));
             }
         }
     }

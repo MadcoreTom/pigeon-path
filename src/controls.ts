@@ -68,6 +68,6 @@ export function initMouse(canvas: HTMLElement, state: State, scale: number = 1) 
     canvas.addEventListener("drag", evt => { state.mouse.pos[0] = evt.offsetX / scale; state.mouse.pos[1] = evt.offsetY / scale; state.mouse.clicked = true; });
     canvas.addEventListener("mousedown", evt => { setMouseButton(evt, state); });
     canvas.addEventListener("wheel",  evt=>{
-        state.mouse.scroll += evt.deltaZ > 0 ? 1 : -1;
+        state.mouse.scroll += evt.deltaY > 0 ? 1 : -1;
     });
 }

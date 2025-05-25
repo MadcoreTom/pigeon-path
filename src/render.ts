@@ -1,7 +1,7 @@
 import { Arr2 } from "./arr2";
 import { COLOURS } from "./colours";
 import { TileImage } from "./img";
-import { Tile } from "./tile";
+import { getTileName, Tile, TILE_NAMES } from "./tile";
 import { State, XY } from "./world";
 
 const WIDTH = 260;
@@ -63,7 +63,7 @@ function renderEditor(ctx: CanvasRenderingContext2D, state: State, time: number)
     if (time % 1000 < 500) {
         smallText.drawString(ctx, [0, 0], "Editor Mode");
     }
-    // renderSpeechBubble(ctx, [state.mouse.pos[0], state.mouse.pos[1]], Tile[state.mode.tile]);
+    renderSpeechBubble(ctx, [state.mouse.pos[0], state.mouse.pos[1]], getTileName(state.mouse.scroll));
 }
 
 function rnd([x, y]: XY): boolean {
