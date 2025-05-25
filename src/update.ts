@@ -1,7 +1,8 @@
 import { Controls, isKeyTyped } from "./controls";
 import { loadLevel } from "./levels";
 import { SOUND } from "./sound";
-import { isFinalLength, isSecondFinalLength, State, Tile, XY } from "./world";
+import { TILES } from "./tile";
+import { isFinalLength, isSecondFinalLength, State, XY } from "./world";
 
 export function update(state: State, delta: number) {
     if(state.mode.type == "editor"){
@@ -23,6 +24,7 @@ export function update(state: State, delta: number) {
         }
 
         if (movement) {
+            console.log("MOVE",movement)
             const end = state.path[state.path.length - 1];
             const secondEnd = state.path[state.path.length - 2];
             const newPos: XY = [end[0] + movement[0], end[1] + movement[1]];
@@ -36,9 +38,9 @@ export function update(state: State, delta: number) {
                 SOUND.collide();
             } else {
                 // push
-                const collides = state.tiles.get(newPos[0], newPos[1]) == Tile.WALL || state.entities.filter(e=>e.pos[0] == newPos[0] && e.pos[1] == newPos[1]).length > 0;
+                const collides = TILES[state.tiles.get(newPos[0], newPos[1])].solid || state.entities.filter(e=>e.pos[0] == newPos[0] && e.pos[1] == newPos[1]).length > 0;
                 if (!collides) {
-                    const needsToFinishOnThisTile = state.tiles.get(newPos[0], newPos[1]) == Tile.DOOR_CLOSED;
+                    const needsToFinishOnThisTile = state.tiles.get(newPos[0], newPos[1]) == "DOOR_CLOSED";
                     if (needsToFinishOnThisTile && !isSecondFinalLength(state)) {
                         SOUND.doorLocked();
                     } else {
@@ -76,11 +78,11 @@ export function update(state: State, delta: number) {
             const badStop = state.entities.filter(e => e.path.filter(p => p[0] == end[0] && p[1] == end[1]).length > 0).length > 0;
             if (badStop) {
                 state.speechBubble = "Can't move here!";
-            } else if (t == Tile.DOOR_CLOSED) {
-                state.speechBubble = "Open!"
+            } else if (t == "DOOR_CLOSED") {
+                state.speechBubble = TILES[t].use?.name || null;
                 state.canMove = true;
-            } else if (t == Tile.FLAG) {
-                state.speechBubble = "Finish!"
+            } else if (t == "FLAG") {
+                state.speechBubble = TILES[t].use?.name || null;
                 state.canMove = true;
             } else {
                 state.speechBubble = "Go!"
@@ -96,10 +98,10 @@ export function update(state: State, delta: number) {
             const end = state.path[state.path.length - 1];
             state.path = [end];
             const tile = state.tiles.get(end[0], end[1]);
-            if (tile == Tile.DOOR_CLOSED) {
+            if (tile == "DOOR_CLOSED") {
                 SOUND.openDoor();
-                state.tiles.set(end[0], end[1], Tile.DOOR_OPENED);
-            } else if (tile == Tile.FLAG) {
+                state.tiles.set(end[0], end[1], "DOOR_OPENED");
+            } else if (tile == "FLAG") {
                 SOUND.newLevel();
                 state.mode = { type: "transition", progress: 0, direction: "down", levelDelta: 1 };
             }
@@ -168,14 +170,14 @@ function calcEntityPath(state: State) {
                 const down = state.tiles.get(end[0], end[1] + 1);
                 console.log(up, down)
                 if (e.down) {
-                    if (down != Tile.WALL && down != Tile.DOOR_CLOSED) {
+                    if (down != "WALL" && down != "DOOR_CLOSED") {
                         e.path.push([end[0], end[1] + 1]);
                     } else {
                         e.down = false;
                         i--;
                     }
                 } else if (!e.down) {
-                    if (up != Tile.WALL && up != Tile.DOOR_CLOSED) {
+                    if (up != "WALL" && up != "DOOR_CLOSED") {
                         e.path.push([end[0], end[1] - 1]);
                     } else {
                         e.down = true;
@@ -191,9 +193,9 @@ function calcMoves(state: State) {
     state.modifiers = [];
     state.path.forEach(p => {
         const t = state.tiles.get(p[0], p[1]);
-        if (t == Tile.MULTIPLY) {
+        if (t == "MULTIPLY") {
             state.modifiers.push("x")
-        } else if (t == Tile.PLUS) {
+        } else if (t == "PLUS") {
             state.modifiers.push("+")
         }
     })
@@ -221,10 +223,10 @@ function updateEditor(state: State) {
     }
     if (state.mouse.rightClicked && state.mode.type == "editor") {
         state.mouse.rightClicked = false;
-        const len = Object.values(Tile).filter(v => typeof v == "string").length;
-        const i: number = Tile[Tile[state.mode.tile]];
-        console.log(len)
-        const j = (i + 1) % len;
-        state.mode.tile = Tile[Tile[j]]
+        // const len = Object.values(Tile).filter(v => typeof v == "string").length;
+        // const i: number = Tile[Tile[state.mode.tile]];
+        // console.log(len)
+        // const j = (i + 1) % len;
+        // state.mode.tile = Tile[Tile[j]]
     }
 }

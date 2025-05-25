@@ -1,4 +1,5 @@
-import { State, Tile } from "./world"
+import { Tile } from "./tile"
+import { State } from "./world"
 
 const LEVEL_FLAG = `
 ####################
@@ -307,12 +308,12 @@ const LEVELS = [
 ]
 
 const CHAR_MAP: { [id: string]: Tile } = {
-    "#": Tile.WALL,
-    ".": Tile.EMPTY,
-    "^": Tile.DOOR_CLOSED,
-    "!": Tile.FLAG,
-    "x": Tile.MULTIPLY,
-    "+": Tile.PLUS
+    "#": "WALL",
+    ".": "EMPTY",
+    "^": "DOOR_CLOSED",
+    "!": "FLAG",
+    "x": "MULTIPLY",
+    "+": "PLUS"
 }
 
 export function loadLevel(state: State, levelNum: number) {
@@ -322,7 +323,7 @@ export function loadLevel(state: State, levelNum: number) {
         const lines = level.split(/[\r\n]+/).map(a => a.trim()).filter(a => a.length > 0);
         lines.forEach((line, y) => {
             line.split("").forEach((char, x) => {
-                state.tiles.set(x, y, CHAR_MAP[char] | Tile.EMPTY);
+                state.tiles.set(x, y, CHAR_MAP[char] || "EMPTY");
                 if (char == "s") {
                     state.path = [[x, y]]
                 }

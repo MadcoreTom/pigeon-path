@@ -1,7 +1,8 @@
 import { Arr2 } from "./arr2";
 import { COLOURS } from "./colours";
 import { TileImage } from "./img";
-import { isFinalLength, State, Tile, XY } from "./world";
+import { Tile } from "./tile";
+import { State, XY } from "./world";
 
 const WIDTH = 260;
 const HEIGHT = 260;
@@ -62,7 +63,7 @@ function renderEditor(ctx: CanvasRenderingContext2D, state: State, time: number)
     if (time % 1000 < 500) {
         smallText.drawString(ctx, [0, 0], "Editor Mode");
     }
-    renderSpeechBubble(ctx, [state.mouse.pos[0], state.mouse.pos[1]], Tile[state.mode.tile]);
+    // renderSpeechBubble(ctx, [state.mouse.pos[0], state.mouse.pos[1]], Tile[state.mode.tile]);
 }
 
 function rnd([x, y]: XY): boolean {
@@ -76,44 +77,44 @@ function renderTiles(ctx: CanvasRenderingContext2D, tiles: Arr2<Tile>, time: num
 
     tiles.forEach((x, y, t) => {
         switch (t) {
-            case Tile.EMPTY:
+            case "EMPTY":
                 img.drawTile(ctx, [x * 13, y * 13], "blank");
                 break;
-            case Tile.WALL:
+            case "WALL":
                 img.draw(ctx, rnd([x, y]) ? [5, 1] : [9, 0], [x * 13, y * 13]);
                 // borders
-                if (tiles.get(x - 1, y) != Tile.WALL) {
+                if (tiles.get(x - 1, y) != "WALL") {
                     ctx.fillStyle = COLOURS.DARK;
                     ctx.fillRect(x * 13, y * 13, 1, 13);
                 }
-                if (tiles.get(x + 1, y) != Tile.WALL) {
+                if (tiles.get(x + 1, y) != "WALL") {
                     ctx.fillStyle = COLOURS.DARK;
                     ctx.fillRect(x * 13 + 12, y * 13, 1, 13);
                 }
-                if (tiles.get(x, y - 1) != Tile.WALL) {
+                if (tiles.get(x, y - 1) != "WALL") {
                     ctx.fillStyle = COLOURS.DARK;
                     ctx.fillRect(x * 13, y * 13, 13, 1);
                 }
-                if (tiles.get(x, y + 1) != Tile.WALL) {
+                if (tiles.get(x, y + 1) != "WALL") {
                     ctx.fillStyle = COLOURS.DARK;
                     ctx.fillRect(x * 13, y * 13 + 12, 13, 1);
                 }
                 break;
-            case Tile.DOOR_CLOSED:
+            case "DOOR_CLOSED":
                 img.draw(ctx, [6, 1], [x * 13, y * 13]);
                 break;
-            case Tile.DOOR_OPENED:
+            case "DOOR_OPENED":
                 img.draw(ctx, [7, 1], [x * 13, y * 13]);
                 break;
-            case Tile.FLAG:
+            case "FLAG":
                 img.drawTile(ctx, [x * 13, y * 13], "blank");
                 img.draw(ctx, [6 + Math.floor((time / 100) % 4), 6], [x * 13, y * 13]);
                 break;
-            case Tile.PLUS:
+            case "PLUS":
                 img.drawTile(ctx, [x * 13, y * 13], "blank");
                 img.draw(ctx, [8, 1], [x * 13, y * 13 + Math.sin(time / 100 + x + y) * 1.5]);
                 break;
-            case Tile.MULTIPLY:
+            case "MULTIPLY":
                 img.drawTile(ctx, [x * 13, y * 13], "blank");
                 img.draw(ctx, [9, 1], [x * 13, y * 13 + Math.sin(time / 100 + x + y) * 1.5]);
                 break;

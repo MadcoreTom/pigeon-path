@@ -1,22 +1,13 @@
 import { Arr2 } from "./arr2"
-
-export enum Tile {
-    EMPTY,
-    WALL,
-    FLAG,
-    DOOR_CLOSED,
-    DOOR_OPENED,
-    PLUS,
-    MULTIPLY
-}
+import { Tile, TILES } from "./tile";
 
 export type XY = [number, number];
 
-export type Mode = { type: "play" } | 
+export type Mode = { type: "play" } |
 { type: "moving", progress: number } |
-{ type: "transition", direction: "up" | "down", progress: number, levelDelta: number } | 
-{ type: "entities", time:number} | 
-{ type: "editor", tile: Tile}
+{ type: "transition", direction: "up" | "down", progress: number, levelDelta: number } |
+{ type: "entities", time: number } |
+{ type: "editor", tile: Tile }
 
 export type Entity = {
     type: "vertical",
@@ -33,25 +24,26 @@ export type State = {
     finalMoves: number,
     modifiers: ("x" | "+")[],
     level: number,
-    speechBubble:string | null,
+    speechBubble: string | null,
     entities: Entity[],
     canMove: boolean,
-    editor:{
+    editor: {
         tiles: Arr2<Tile>
     },
     mouse: {
-        pos:XY,
+        pos: XY,
         clicked: boolean,
-        rightClicked: boolean
+        rightClicked: boolean,
+        scroll: number
     }
 }
 
 export function initState(): State {
-    const tiles = new Arr2(20, 20, Tile.WALL);
-    tiles.fill((x, y) => x > 11 && Math.random() > y / 20 ? Tile.WALL : Tile.EMPTY);
+    const tiles = new Arr2<Tile>(20, 20, "WALL");
+    tiles.fill((x, y) => x > 11 && Math.random() > y / 20 ? "WALL" : "EMPTY");
 
-    const editor = new Arr2(20, 20, Tile.WALL);
-    editor.fill((x, y) => x > 11 && Math.random() > y / 20 ? Tile.WALL : Tile.EMPTY);
+    const editor = new Arr2<Tile>(20, 20, "WALL");
+    editor.fill((x, y) => x > 11 && Math.random() > y / 20 ? "WALL" : "EMPTY");
 
     return {
         tiles,
@@ -66,8 +58,8 @@ export function initState(): State {
             [4, 1],
             [4, 0]
         ],
-        // mode: { type: "transition", direction: "up", progress: 2, levelDelta: 0 },
-        mode: {type:"editor", tile:Tile.WALL},
+        mode: { type: "transition", direction: "up", progress: 2, levelDelta: 0 },
+        // mode: { type: "editor", tile: "WALL" },
         moves: 4,
         finalMoves: 4,
         modifiers: [],
@@ -75,13 +67,14 @@ export function initState(): State {
         speechBubble: null,
         entities: [],
         canMove: false,
-        editor:{
+        editor: {
             tiles: editor
         },
         mouse: {
-            pos:[0,0],
-            clicked:false,
-            rightClicked: false
+            pos: [0, 0],
+            clicked: false,
+            rightClicked: false,
+            scroll: 0
         }
     }
 }
