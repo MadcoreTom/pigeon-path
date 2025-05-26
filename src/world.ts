@@ -58,8 +58,8 @@ export function initState(): State {
             [4, 1],
             [4, 0]
         ],
-        // mode: { type: "transition", direction: "up", progress: 2, levelDelta: 0 },
-        mode: { type: "editor", tile: "WALL" },
+        mode: { type: "transition", direction: "up", progress: 2, levelDelta: 0 },
+        // mode: { type: "editor", tile: "WALL" },
         moves: 4,
         finalMoves: 4,
         modifiers: [],

@@ -1,7 +1,7 @@
 import { Arr2 } from "./arr2";
 import { COLOURS } from "./colours";
 import { TileImage } from "./img";
-import { getTileName, Tile, TILE_NAMES } from "./tile";
+import { getTileName, Tile, TILE_NAMES, TILES } from "./tile";
 import { State, XY } from "./world";
 
 const WIDTH = 260;
@@ -15,6 +15,17 @@ const img = new TileImage("img.png", 13, {
     speech_bl: [0, 11],
     speech_bm: [1, 11],
     speech_br: [2, 11],
+    grass: [5,0],
+    tree1: [5,1],
+    tree2: [9,0],
+    rockSolid: [6,1],
+    rockBroken: [7,1],
+    flag1:[6,6],
+    flag2:[7,6],
+    flag3:[8,6],
+    flag4:[9,6],
+    plus: [8,1],
+    multiply: [9,1]
 });
 
 const smallText = new TileImage("dogica.png", 9, {});
@@ -75,51 +86,46 @@ function renderTiles(ctx: CanvasRenderingContext2D, tiles: Arr2<Tile>, time: num
     ctx.fillStyle = COLOURS.SECONDARY;
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
+    // background
     tiles.forEach((x, y, t) => {
-        switch (t) {
-            case "EMPTY":
-                img.drawTile(ctx, [x * 13, y * 13], "blank");
-                break;
-            case "WALL":
-                img.draw(ctx, rnd([x, y]) ? [5, 1] : [9, 0], [x * 13, y * 13]);
-                // borders
-                if (tiles.get(x - 1, y) != "WALL") {
-                    ctx.fillStyle = COLOURS.DARK;
-                    ctx.fillRect(x * 13, y * 13, 1, 13);
-                }
-                if (tiles.get(x + 1, y) != "WALL") {
-                    ctx.fillStyle = COLOURS.DARK;
-                    ctx.fillRect(x * 13 + 12, y * 13, 1, 13);
-                }
-                if (tiles.get(x, y - 1) != "WALL") {
-                    ctx.fillStyle = COLOURS.DARK;
-                    ctx.fillRect(x * 13, y * 13, 13, 1);
-                }
-                if (tiles.get(x, y + 1) != "WALL") {
-                    ctx.fillStyle = COLOURS.DARK;
-                    ctx.fillRect(x * 13, y * 13 + 12, 13, 1);
-                }
-                break;
-            case "DOOR_CLOSED":
-                img.draw(ctx, [6, 1], [x * 13, y * 13]);
-                break;
-            case "DOOR_OPENED":
-                img.draw(ctx, [7, 1], [x * 13, y * 13]);
-                break;
-            case "FLAG":
-                img.drawTile(ctx, [x * 13, y * 13], "blank");
-                img.draw(ctx, [6 + Math.floor((time / 100) % 4), 6], [x * 13, y * 13]);
-                break;
-            case "PLUS":
-                img.drawTile(ctx, [x * 13, y * 13], "blank");
-                img.draw(ctx, [8, 1], [x * 13, y * 13 + Math.sin(time / 100 + x + y) * 1.5]);
-                break;
-            case "MULTIPLY":
-                img.drawTile(ctx, [x * 13, y * 13], "blank");
-                img.draw(ctx, [9, 1], [x * 13, y * 13 + Math.sin(time / 100 + x + y) * 1.5]);
-                break;
+        const name = TILES[t].getTileBackground([x, y], time);
+        if (name) {
+            img.drawTile(ctx, [x * 13, y * 13], name as any)
         }
+    });
 
+    // borders
+    tiles.forEach((x, y, t) => {
+        if (TILES[t].solid) {
+            if (!TILES[tiles.get(x - 1, y)].solid) {
+                ctx.fillStyle = COLOURS.DARK;
+                ctx.fillRect(x * 13, y * 13, 1, 13);
+            }
+            if (!TILES[tiles.get(x + 1, y)].solid) {
+                ctx.fillStyle = COLOURS.DARK;
+                ctx.fillRect(x * 13 + 12, y * 13, 1, 13);
+            }
+            if (!TILES[tiles.get(x, y - 1)].solid) {
+                ctx.fillStyle = COLOURS.DARK;
+                ctx.fillRect(x * 13, y * 13, 13, 1);
+            }
+            if (!TILES[tiles.get(x, y + 1)].solid) {
+                ctx.fillStyle = COLOURS.DARK;
+                ctx.fillRect(x * 13, y * 13 + 12, 13, 1);
+            }
+        }
+    });
+
+    // foreground
+    tiles.forEach((x, y, t) => {
+        const name = TILES[t].getTileForeground([x, y], time);
+        if (name) {
+            let ty = y * 13;
+            if (TILES[t].jiggle) {
+                ty = y * 13 + Math.sin(time / 100 + x + y) * 1.5;
+            }
+            img.drawTile(ctx, [x * 13, ty], name as any)
+        }
     });
 }
 

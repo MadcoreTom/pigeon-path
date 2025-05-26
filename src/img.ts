@@ -30,12 +30,15 @@ export class TileImage<K extends string> {
         if (this.ready) {
             const size = this.size;
             const def = this.tiles[name];
-            const width = def.length == 4 ? def[2] : 1;
-            const height = def.length == 4 ? def[3] : 1;
 
-            ctx.drawImage(this.image,
-                def[0] * size, def[1] * size, size * width, size * height,
-                Math.floor(pos[0]), Math.floor(pos[1]), size * width, size * height)
+            if (def) {
+                const width = def.length == 4 ? def[2] : 1;
+                const height = def.length == 4 ? def[3] : 1;
+
+                ctx.drawImage(this.image,
+                    def[0] * size, def[1] * size, size * width, size * height,
+                    Math.floor(pos[0]), Math.floor(pos[1]), size * width, size * height);
+            }
         }
 
     }
