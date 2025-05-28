@@ -25,7 +25,8 @@ const img = new TileImage("img.png", 13, {
     flag3:[8,6],
     flag4:[9,6],
     plus: [8,1],
-    multiply: [9,1]
+    multiply: [9,1],
+    arrowRightYellow: [1,5]
 });
 
 const smallText = new TileImage("dogica.png", 9, {});
@@ -34,6 +35,10 @@ export function render(ctx: CanvasRenderingContext2D, state: State, time: number
 
     if (state.mode.type == "editor") {
         renderEditor(ctx, state, time);
+        return;
+    }
+    if(state.mode.type == "editMenu"){
+        renderEditMenu(ctx, state, time);
         return;
     }
     renderTiles(ctx, state.tiles, time);
@@ -77,10 +82,22 @@ function renderEditor(ctx: CanvasRenderingContext2D, state: State, time: number)
     renderSpeechBubble(ctx, [state.mouse.pos[0], state.mouse.pos[1]], getTileName(state.mouse.scroll));
 }
 
-function rnd([x, y]: XY): boolean {
-    return Math.floor(x * 3 + y * 2 + x * y + Math.sin(x * 95.0)) % 2 == 0;
+function renderEditMenu(ctx: CanvasRenderingContext2D, state: State, time: number) {
+    if (state.mode.type != "editMenu") {
+        return;
+    }
+    ctx.fillStyle = COLOURS.SECONDARY;
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
+    const top = state.menu[state.menu.length - 1];
+    if (top) {
+        top.forEach((opt, i) => {
+            smallText.drawString(ctx, [13, i * 13 + 13], opt.name);
+        });
+        img.drawTile(ctx, [Math.floor(2 - Math.abs(Math.sin(time / 100) * 7)), state.mode.selected * 13 + 10], "arrowRightYellow");
+    }
 }
+
 
 function renderTiles(ctx: CanvasRenderingContext2D, tiles: Arr2<Tile>, time: number) {
     ctx.fillStyle = COLOURS.SECONDARY;

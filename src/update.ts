@@ -1,5 +1,6 @@
 import { Controls, isKeyTyped } from "./controls";
 import { loadLevel } from "./levels";
+import { addFile, listFiles } from "./localStorage";
 import { SOUND } from "./sound";
 import { getTileName, TILES } from "./tile";
 import { isFinalLength, isSecondFinalLength, State, XY } from "./world";
@@ -7,6 +8,26 @@ import { isFinalLength, isSecondFinalLength, State, XY } from "./world";
 export function update(state: State, delta: number) {
     if(state.mode.type == "editor"){
         updateEditor(state);
+    }
+    if(state.mode.type == "editMenu"){
+        // TODO move to its own update
+        let delta= 0;
+        if (isKeyTyped(Controls.UP)) {
+            delta = -1;
+        }
+        if (isKeyTyped(Controls.DOWN)) {
+            delta = 1;
+        }
+        state.mode.selected += delta;
+        if(delta == 0 && isKeyTyped(Controls.CONFIRM)){
+            const top = state.menu[state.menu.length-1];
+            if(top){
+                const sel = top[state.mode.selected];
+                if(sel){
+                    sel.onClick(state);
+                }
+            }
+        }
     }
     if (state.mode.type == "play") {
         let movement: null | XY = null;
@@ -155,7 +176,28 @@ export function update(state: State, delta: number) {
 
     calcMoves(state);
     if (isKeyTyped(Controls.RESET)) {
-        state.mode = { type: "transition", progress: 0, direction: "down", levelDelta: 0 };
+        if (state.mode.type == "play" || state.mode.type == "moving") {
+            state.mode = { type: "transition", progress: 0, direction: "down", levelDelta: 0 };
+        } else if (state.mode.type == "editor") {
+            state.mode = { type: "editMenu", selected: 0 }
+            state.menu = [[
+                { name: "Return", onClick: (state) => { state.mode = { type: "editor", tile: "EMPTY" } } },
+                { name: "Save", onClick: () => { } },
+                {
+                    name: "Save As", onClick: () => {
+                        state.menu.push([
+                            { name: "Return", onClick: state => state.menu.pop() },
+                            { name: "Set name", onClick: state => { const n = window.prompt("Level Name"); console.log(state.editor.tiles); addFile(n || "untitled", "ERR") } }
+                        ])
+                    }
+                },
+                { name: "Load", onClick: (state) => { 
+                    state.menu.push(listFiles().map(f => { return { name: f, onClick: () => { } } }));
+                    state.menu[state.menu.length-1].unshift({name:"<RETURN>", onClick:state=>state.menu.pop()}) 
+                } },
+                { name: "Test", onClick: (state) => { state.mode = { type: "play" } } }
+            ]]
+        }
     }
 }
 

@@ -7,7 +7,13 @@ export type Mode = { type: "play" } |
 { type: "moving", progress: number } |
 { type: "transition", direction: "up" | "down", progress: number, levelDelta: number } |
 { type: "entities", time: number } |
-{ type: "editor", tile: Tile }
+{ type: "editor", tile: Tile } |
+{ type: "editMenu", selected: number }
+
+type MenuItem = {
+    name: string,
+    onClick: (state:State)=>void
+}
 
 export type Entity = {
     type: "vertical",
@@ -35,7 +41,8 @@ export type State = {
         clicked: boolean,
         rightClicked: boolean,
         scroll: number
-    }
+    },
+    menu: MenuItem[][]
 }
 
 export function initState(): State {
@@ -58,8 +65,8 @@ export function initState(): State {
             [4, 1],
             [4, 0]
         ],
-        mode: { type: "transition", direction: "up", progress: 2, levelDelta: 0 },
-        // mode: { type: "editor", tile: "WALL" },
+        // mode: { type: "transition", direction: "up", progress: 2, levelDelta: 0 },
+        mode: { type: "editor", tile: "WALL" },
         moves: 4,
         finalMoves: 4,
         modifiers: [],
@@ -75,7 +82,8 @@ export function initState(): State {
             clicked: false,
             rightClicked: false,
             scroll: 0
-        }
+        },
+        menu: []
     }
 }
 
