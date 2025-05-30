@@ -1,6 +1,7 @@
 import { Controls, isKeyTyped } from "./controls";
 import { loadLevel } from "./levels";
 import { addFile, listFiles } from "./localStorage";
+import { getMenuItem } from "./menu";
 import { SOUND } from "./sound";
 import { getTileName, TILES } from "./tile";
 import { isFinalLength, isSecondFinalLength, State, XY } from "./world";
@@ -180,23 +181,7 @@ export function update(state: State, delta: number) {
             state.mode = { type: "transition", progress: 0, direction: "down", levelDelta: 0 };
         } else if (state.mode.type == "editor") {
             state.mode = { type: "editMenu", selected: 0 }
-            state.menu = [[
-                { name: "Return", onClick: (state) => { state.mode = { type: "editor", tile: "EMPTY" } } },
-                { name: "Save", onClick: () => { } },
-                {
-                    name: "Save As", onClick: () => {
-                        state.menu.push([
-                            { name: "Return", onClick: state => state.menu.pop() },
-                            { name: "Set name", onClick: state => { const n = window.prompt("Level Name"); console.log(state.editor.tiles); addFile(n || "untitled", "ERR") } }
-                        ])
-                    }
-                },
-                { name: "Load", onClick: (state) => { 
-                    state.menu.push(listFiles().map(f => { return { name: f, onClick: () => { } } }));
-                    state.menu[state.menu.length-1].unshift({name:"<RETURN>", onClick:state=>state.menu.pop()}) 
-                } },
-                { name: "Test", onClick: (state) => { state.mode = { type: "play" } } }
-            ]]
+            state.menu = [getMenuItem()];
         }
     }
 }

@@ -16,6 +16,7 @@ export function listFiles(): string[] {
 }
 
 export function addFile(name: string, content: string) {
+    name = name.replace(/[^a-z0-9]+/gi, '_');
     const names = listFiles();
     if (names.indexOf(name) >= 0) {
         // duplicate
@@ -23,4 +24,10 @@ export function addFile(name: string, content: string) {
         names.push(name);
         window.localStorage.setItem(KEY_NAMES, JSON.stringify(names));
     }
+
+    window.localStorage.setItem(KEY_Prefix + name, content);
+}
+
+export function loadFile(name: string): string | null {
+    return window.localStorage.getItem(KEY_Prefix + name);
 }

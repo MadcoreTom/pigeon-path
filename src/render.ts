@@ -78,6 +78,8 @@ function renderEditor(ctx: CanvasRenderingContext2D, state: State, time: number)
     renderTiles(ctx, state.editor.tiles, time);
     if (time % 1000 < 500) {
         smallText.drawString(ctx, [0, 0], "Editor Mode");
+    } else if(state.editor.filename){
+        smallText.drawString(ctx, [0, 0], state.editor.filename);
     }
     renderSpeechBubble(ctx, [state.mouse.pos[0], state.mouse.pos[1]], getTileName(state.mouse.scroll));
 }

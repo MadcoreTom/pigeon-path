@@ -10,7 +10,7 @@ export type Mode = { type: "play" } |
 { type: "editor", tile: Tile } |
 { type: "editMenu", selected: number }
 
-type MenuItem = {
+export type MenuItem = {
     name: string,
     onClick: (state:State)=>void
 }
@@ -34,7 +34,8 @@ export type State = {
     entities: Entity[],
     canMove: boolean,
     editor: {
-        tiles: Arr2<Tile>
+        tiles: Arr2<Tile>,
+        filename: string | null
     },
     mouse: {
         pos: XY,
@@ -75,7 +76,8 @@ export function initState(): State {
         entities: [],
         canMove: false,
         editor: {
-            tiles: editor
+            tiles: editor,
+            filename: null
         },
         mouse: {
             pos: [0, 0],
