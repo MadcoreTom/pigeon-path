@@ -1,5 +1,6 @@
+import { Arr2 } from "./arr2"
 import { Tile } from "./tile"
-import { State } from "./world"
+import { State, XY } from "./world"
 
 const LEVEL_FLAG = `
 ####################
@@ -302,40 +303,104 @@ const ROOMS = `
 const LEVELS = [
     LEVEL_MULT_2,
     // LEVEL_ENEMY,
-//    LEVEL1, LEVEL2, ROOMS,LOOPS, LEVEL4, LEVEL5, LEVEL6, 
-//    LEVEL7,
-   LEVEL3, END
+    //    LEVEL1, LEVEL2, ROOMS,LOOPS, LEVEL4, LEVEL5, LEVEL6, 
+    //    LEVEL7,
+    LEVEL3, END
 ]
 
 const CHAR_MAP: { [id: string]: Tile } = {
     "#": "WALL",
     ".": "EMPTY",
     "^": "DOOR_CLOSED",
+    "o": "DOOR_OPENED",
     "!": "FLAG",
     "x": "MULTIPLY",
     "+": "PLUS"
 }
 
+const REVRSE_CHAR_MAP = Object.entries(CHAR_MAP).reduce((acc, [v, k]) => { acc[k] = v; return acc }, {});
+console.log(REVRSE_CHAR_MAP)
+
 export function loadLevel(state: State, levelNum: number) {
     const level = LEVELS[levelNum % LEVELS.length];
     state.entities = [];
     if (level) {
-        const lines = level.split(/[\r\n]+/).map(a => a.trim()).filter(a => a.length > 0);
-        lines.forEach((line, y) => {
-            line.split("").forEach((char, x) => {
-                state.tiles.set(x, y, CHAR_MAP[char] || "EMPTY");
+        loadTiles(
+            level,
+            state.tiles,
+            (char, [x, y]) => {
                 if (char == "s") {
+                    // start
                     state.path = [[x, y]]
                 }
                 if (char == "A") {
+                    // enemy a
                     state.entities.push({
                         type: "vertical",
                         down: true,
-                        path: [[x,y]],
+                        path: [[x, y]],
                         pos: [x, y]
                     });
                 }
-            })
-        })
+                return "EMPTY";
+            }
+        );
     }
+}
+
+function loadTiles(data: string, tiles: Arr2<Tile>, handler: (c: string, xy: XY) => Tile) {
+    const lines = data.split(/[\r\n]+/).map(a => a.trim()).filter(a => a.length > 0);
+    lines.forEach((line, y) => {
+        line.split("").forEach((char, x) => {
+            const t = CHAR_MAP[char];
+            if (t) {
+                tiles.set(x, y, t);
+            } else {
+                tiles.set(x, y, handler(char, [x, y]));
+            }
+        });
+    });
+}
+
+export function serializeEditor(state: State): string {
+    let str = "";
+    for (let row = 0; row < state.editor.tiles.height; row++) {
+        for (let col = 0; col < state.editor.tiles.width; col++) {
+            const t = state.editor.tiles.get(col, row)
+            const c = REVRSE_CHAR_MAP[t];
+            if (row > 0 && col == 0) {
+                str += "\n";
+            }
+            str += c;
+        }
+    }
+    state.editor.tiles.forEach((x, y, t) => {
+
+    });
+    return str;
+}
+
+
+export function deserializeEditor(data: string, state: State) {
+    loadTiles(
+        data,
+        state.editor.tiles,
+        (char, [x, y]) => {
+            // if (char == "s") {
+            //     // start
+            //     state.path = [[x, y]]
+            // }
+            // if (char == "A") {
+            //     // enemy a
+            //     state.entities.push({
+            //         type: "vertical",
+            //         down: true,
+            //         path: [[x, y]],
+            //         pos: [x, y]
+            //     });
+            // }
+            console.log("Ignoring char", char)
+            return "EMPTY";
+        }
+    );
 }

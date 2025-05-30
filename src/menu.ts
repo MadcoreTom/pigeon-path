@@ -1,3 +1,4 @@
+import { deserializeEditor, serializeEditor } from "./levels";
 import { addFile, listFiles, loadFile } from "./localStorage";
 import { MenuItem, State } from "./world";
 
@@ -42,7 +43,9 @@ function addSaveMenu(state: State) {
             return {
                 name: " " + f,
                 onClick: state => {
-                    addFile(f, "content123");
+                    const content = serializeEditor(state);
+                    console.log(content)
+                    addFile(f, content);
                     state.mode = { type: "editor", tile: "DOOR_CLOSED" }
                 }
             }
@@ -75,6 +78,7 @@ function addLoadMenu(state: State) {
                         // TODO else remove from file list
                         // TODO turn string to state
                         console.log("CONTENT", content);
+                        deserializeEditor(content, state);
                         state.mode = { type: "editor", tile: "DOOR_CLOSED" }
                     }
                 }
