@@ -94,18 +94,28 @@ function renderEditor(ctx: CanvasRenderingContext2D, state: State, time: number)
     ctx.strokeStyle = time % 500 < 250 ? COLOURS.DARK : COLOURS.LIGHT;
     ctx.strokeRect(tx * 13 + 0.5, ty * 13 + 0.5, 12, 12);
 
+    // SPAWN
+    if(time % 500 < 250){
+        img.drawTile(ctx,[state.editor.spawn[0]*13, state.editor.spawn[1]*13], "arrowRightYellow")
+    }
+
     // hud
     ctx.fillStyle = COLOURS.LIGHT;
     ctx.fillRect(0, HEIGHT - 13 * 2, WIDTH, 13 * 2);
-    smallText.drawString(ctx, [0, 13*18], "Editor Mode: " + (state.editor.filename || "untitled"));
+    smallText.drawString(ctx, [0, 13 * 18], "Editor Mode: " + (state.editor.filename || "untitled"));
 
-    const sel = getTileName(state.mouse.scroll);
-    TILE_NAMES.forEach((t,i)=>{
-        img.drawTile(ctx, [i*13, 13*19 - (sel == t ? 4 : 0)], TILES[t].getTileBackground([0,0],time) as any);
-        img.drawTile(ctx, [i*13, 13*19 - (sel == t ? 4 : 0)], TILES[t].getTileForeground([0,0],time) as any);
-    });
+    if (state.editor.mode == "tile") {
+        const sel = getTileName(state.mouse.scroll);
+        TILE_NAMES.forEach((t, i) => {
+            img.drawTile(ctx, [i * 13, 13 * 19 - (sel == t ? 4 : 0)], TILES[t].getTileBackground([0, 0], time) as any);
+            img.drawTile(ctx, [i * 13, 13 * 19 - (sel == t ? 4 : 0)], TILES[t].getTileForeground([0, 0], time) as any);
+        });
+        renderSpeechBubble(ctx, [state.mouse.pos[0], state.mouse.pos[1]], sel);
+    } else {
+        const mode = ["Spawn", "Enemy"][(2 + (state.mouse.scroll % 2)) % 2];
+        smallText.drawString(ctx, [0, 13 * 19], "..." + mode);
+    }
 
-    renderSpeechBubble(ctx, [state.mouse.pos[0], state.mouse.pos[1]], sel);
 }
 
 function renderEditMenu(ctx: CanvasRenderingContext2D, state: State, time: number) {

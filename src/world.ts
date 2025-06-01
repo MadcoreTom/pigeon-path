@@ -1,5 +1,5 @@
 import { Arr2 } from "./arr2"
-import { Tile, TILES } from "./tile";
+import { Tile } from "./tile";
 
 export type XY = [number, number];
 
@@ -35,7 +35,9 @@ export type State = {
     canMove: boolean,
     editor: {
         tiles: Arr2<Tile>,
-        filename: string | null
+        filename: string | null,
+        spawn: XY,
+        mode: "tile"|"entity"
     },
     mouse: {
         pos: XY,
@@ -79,7 +81,9 @@ export function initState(): State {
         canMove: false,
         editor: {
             tiles: editor,
-            filename: null
+            filename: null,
+            spawn: [5,5],
+            mode:"tile"
         },
         mouse: {
             pos: [0, 0],

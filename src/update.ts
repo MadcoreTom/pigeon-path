@@ -196,6 +196,10 @@ export function update(state: State, delta: number) {
             state.menu = [getMenuItem()];
         }
     }
+
+    if(state.mode.type == "editor" && isKeyTyped(Controls.CONFIRM) ){
+        state.editor.mode = state.editor.mode == "entity" ? "tile" : "entity";
+    }
 }
 
 function calcEntityPath(state: State) {
