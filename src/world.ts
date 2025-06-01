@@ -8,7 +8,7 @@ export type Mode = { type: "play" } |
 { type: "transition", direction: "up" | "down", progress: number, levelDelta: number } |
 { type: "entities", time: number } |
 { type: "editor", tile: Tile } |
-{ type: "editMenu", selected: number }
+{ type: "editMenu", selected: number } 
 
 export type MenuItem = {
     name: string,
@@ -43,7 +43,8 @@ export type State = {
         rightClicked: boolean,
         scroll: number
     },
-    menu: MenuItem[][]
+    menu: MenuItem[][],
+    testing: boolean
 }
 
 export function initState(): State {
@@ -68,6 +69,7 @@ export function initState(): State {
         ],
         // mode: { type: "transition", direction: "up", progress: 2, levelDelta: 0 },
         mode: { type: "editor", tile: "WALL" },
+        testing: true,
         moves: 4,
         finalMoves: 4,
         modifiers: [],

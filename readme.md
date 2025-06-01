@@ -70,7 +70,7 @@ items
 
 ## Editor Todo
 
-- test level
+- ✅ test level
 - switch back to normal play
 - set start
 - add/remove entity

@@ -163,7 +163,15 @@ export function update(state: State, delta: number) {
                 state.mode.progress = 1;
                 state.mode.direction = "up";
                 state.level += state.mode.levelDelta;
-                loadLevel(state, state.level);
+                if (state.testing) {
+                    console.log("Load testing");
+                    state.editor.tiles.forEach((x, y, t) => {
+                        state.tiles.set(x, y, t);
+                    });
+                } else {
+                    console.log("Load normal")
+                    loadLevel(state, state.level);
+                }
             }
         } else {
             state.mode.progress -= delta * 0.003;
@@ -178,7 +186,11 @@ export function update(state: State, delta: number) {
     calcMoves(state);
     if (isKeyTyped(Controls.RESET)) {
         if (state.mode.type == "play" || state.mode.type == "moving") {
-            state.mode = { type: "transition", progress: 0, direction: "down", levelDelta: 0 };
+            if (state.testing) {
+                state.mode = { type: "editor", tile: "EMPTY" };
+            } else {
+                state.mode = { type: "transition", progress: 0, direction: "down", levelDelta: 0 };
+            }
         } else if (state.mode.type == "editor") {
             state.mode = { type: "editMenu", selected: 0 }
             state.menu = [getMenuItem()];

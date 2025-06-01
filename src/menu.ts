@@ -15,7 +15,13 @@ export function getMenuItem(): MenuItem[] {
         {
             name: "Save",
             onClick: addSaveMenu
-
+        },
+        {
+            name: "Test",
+            onClick: state=>{
+                state.testing = true;
+                state.mode = { type: "transition", direction:"down", progress:0, levelDelta:0 }
+            }
         }
     ]
 }
