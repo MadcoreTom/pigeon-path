@@ -2,6 +2,26 @@ import { Arr2 } from "./arr2"
 import { Tile } from "./tile"
 import { State, XY } from "./world"
 
+const ISLAND = `
+wwwwwwwwwwwwwwwwwwww
+wwwwwwww....#wwwwwww
+wwwww##.....#.#wwwww
+www.......&&&&&#wwww
+ww...#....&...&##www
+ww..........!.&##^ww
+w....+..::&...&##^ww
+w.....::::&&&&&^#^ww
+w##..::::wwwwwwwwwww
+w^^..:::wwwwwwwwwwww
+w^^..::::wwwwww^^www
+ww.....:::.....^^www
+ww...##....#.###^www
+ww::..^^#.s...^^^www
+www::.^^#....##^^www
+wwww::........##wwww
+wwwww::::::::.wwwwww
+wwwwwwwwwwwwwwwwwwww`
+
 const LEVEL_FLAG = `
 ####################
 ####################
@@ -301,6 +321,7 @@ const ROOMS = `
 `
 
 const LEVELS = [
+    ISLAND,
     LEVEL_MULT_2,
     // LEVEL_ENEMY,
     //    LEVEL1, LEVEL2, ROOMS,LOOPS, LEVEL4, LEVEL5, LEVEL6, 
@@ -315,7 +336,13 @@ const CHAR_MAP: { [id: string]: Tile } = {
     "o": "DOOR_OPENED",
     "!": "FLAG",
     "x": "MULTIPLY",
-    "+": "PLUS"
+    "+": "PLUS",
+    "w": "WATER",
+    ":": "SAND",
+    "&": "STONE_WALL",
+    "C": "CRATE_CLOSED",
+    "c": "CRATE_OPENED",
+    "{": "CACTUS"
 }
 
 const REVRSE_CHAR_MAP = Object.entries(CHAR_MAP).reduce((acc, [v, k]) => { acc[k] = v; return acc }, {});

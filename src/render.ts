@@ -15,18 +15,28 @@ const img = new TileImage("img.png", 13, {
     speech_bl: [0, 11],
     speech_bm: [1, 11],
     speech_br: [2, 11],
-    grass: [5,0],
-    tree1: [5,1],
-    tree2: [9,0],
-    rockSolid: [6,1],
-    rockBroken: [7,1],
-    flag1:[6,6],
-    flag2:[7,6],
-    flag3:[8,6],
-    flag4:[9,6],
-    plus: [8,1],
-    multiply: [9,1],
-    arrowRightYellow: [1,5]
+    grass: [5, 0],
+    tree1: [5, 1],
+    tree2: [9, 0],
+    rockSolid: [6, 1],
+    rockBroken: [7, 1],
+    flag1: [6, 6],
+    flag2: [7, 6],
+    flag3: [8, 6],
+    flag4: [9, 6],
+    plus: [8, 1],
+    multiply: [9, 1],
+    arrowRightYellow: [1, 5],
+    sand: [0, 14],
+    crate: [1, 14],
+    crateBroken: [2, 14],
+    cactus1: [8, 14],
+    cactus2: [9, 14],
+    stoneWall1: [0, 15],
+    stoneWall2: [1, 15],
+    water1: [2, 15],
+    water2: [3, 15],
+    water3: [4, 15]
 });
 
 const smallText = new TileImage("dogica.png", 9, {});
@@ -37,7 +47,7 @@ export function render(ctx: CanvasRenderingContext2D, state: State, time: number
         renderEditor(ctx, state, time);
         return;
     }
-    if(state.mode.type == "editMenu"){
+    if (state.mode.type == "editMenu") {
         renderEditMenu(ctx, state, time);
         return;
     }
@@ -76,12 +86,26 @@ function renderEditor(ctx: CanvasRenderingContext2D, state: State, time: number)
         return;
     }
     renderTiles(ctx, state.editor.tiles, time);
-    if (time % 1000 < 500) {
-        smallText.drawString(ctx, [0, 0], "Editor Mode");
-    } else if(state.editor.filename){
-        smallText.drawString(ctx, [0, 0], state.editor.filename);
-    }
-    renderSpeechBubble(ctx, [state.mouse.pos[0], state.mouse.pos[1]], getTileName(state.mouse.scroll));
+
+
+    const tx = Math.floor(state.mouse.pos[0] / 13);
+    const ty = Math.floor(state.mouse.pos[1] / 13);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = time % 500 < 250 ? COLOURS.DARK : COLOURS.LIGHT;
+    ctx.strokeRect(tx * 13 + 0.5, ty * 13 + 0.5, 12, 12);
+
+    // hud
+    ctx.fillStyle = COLOURS.LIGHT;
+    ctx.fillRect(0, HEIGHT - 13 * 2, WIDTH, 13 * 2);
+    smallText.drawString(ctx, [0, 13*18], "Editor Mode: " + (state.editor.filename || "untitled"));
+
+    const sel = getTileName(state.mouse.scroll);
+    TILE_NAMES.forEach((t,i)=>{
+        img.drawTile(ctx, [i*13, 13*19 - (sel == t ? 4 : 0)], TILES[t].getTileBackground([0,0],time) as any);
+        img.drawTile(ctx, [i*13, 13*19 - (sel == t ? 4 : 0)], TILES[t].getTileForeground([0,0],time) as any);
+    });
+
+    renderSpeechBubble(ctx, [state.mouse.pos[0], state.mouse.pos[1]], sel);
 }
 
 function renderEditMenu(ctx: CanvasRenderingContext2D, state: State, time: number) {

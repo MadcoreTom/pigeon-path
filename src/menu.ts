@@ -31,10 +31,11 @@ function addSaveMenu(state: State) {
         {
             name: "New File",
             onClick: state => {
-                const n = window.prompt("Level Name");
+                let n = window.prompt("Level Name");
                 if(n){
                     // TODO turn state to string
-                    addFile(n, "Content 123");
+                    n = addFile(n, "Content 123");
+                    state.editor.filename = n;
                     state.mode = { type: "editor", tile: "DOOR_CLOSED" }
                 }
             }
@@ -45,7 +46,7 @@ function addSaveMenu(state: State) {
                 onClick: state => {
                     const content = serializeEditor(state);
                     console.log(content)
-                    addFile(f, content);
+                    state.editor.filename = addFile(f, content);
                     state.mode = { type: "editor", tile: "DOOR_CLOSED" }
                 }
             }

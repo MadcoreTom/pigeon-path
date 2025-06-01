@@ -67,3 +67,11 @@ items
 * boat - can cross water
 * sword - kills baddies
 * shield - doesn't get hut by baddies
+
+## Editor Todo
+
+- test level
+- switch back to normal play
+- set start
+- add/remove entity
+- ✅ game covers rows 18 and 19, so cover them in editor and show state or tiles or something

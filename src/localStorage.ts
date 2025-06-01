@@ -15,7 +15,7 @@ export function listFiles(): string[] {
     return [];
 }
 
-export function addFile(name: string, content: string) {
+export function addFile(name: string, content: string): string {
     name = name.replace(/[^a-z0-9]+/gi, '_');
     const names = listFiles();
     if (names.indexOf(name) >= 0) {
@@ -26,6 +26,7 @@ export function addFile(name: string, content: string) {
     }
 
     window.localStorage.setItem(KEY_Prefix + name, content);
+    return name;
 }
 
 export function loadFile(name: string): string | null {

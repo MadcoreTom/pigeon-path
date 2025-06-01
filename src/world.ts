@@ -47,10 +47,10 @@ export type State = {
 }
 
 export function initState(): State {
-    const tiles = new Arr2<Tile>(20, 20, "WALL");
+    const tiles = new Arr2<Tile>(20, 18, "WALL");
     tiles.fill((x, y) => x > 11 && Math.random() > y / 20 ? "WALL" : "EMPTY");
 
-    const editor = new Arr2<Tile>(20, 20, "WALL");
+    const editor = new Arr2<Tile>(20, 18, "WALL");
     editor.fill((x, y) => x > 11 && Math.random() > y / 20 ? "WALL" : "EMPTY");
 
     return {
