@@ -259,8 +259,15 @@ function updateEditor(state: State) {
         if (state.mode.type == "editor") {
             const tx = Math.floor(state.mouse.pos[0] / 13);
             const ty = Math.floor(state.mouse.pos[1] / 13);
+            if(state.editor.mode == "tile"){
             if (state.editor.tiles.inRange(tx, ty)) {
                 state.editor.tiles.set(tx, ty, getTileName(state.mouse.scroll));
+            }
+            } else if(state.editor.mode == "entity"){
+                switch(state.mouse.scroll % 2){
+                    case 0:
+                        state.editor.spawn = [tx,ty]
+                }
             }
         }
     }

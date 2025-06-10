@@ -393,17 +393,17 @@ export function serializeEditor(state: State): string {
     let str = "";
     for (let row = 0; row < state.editor.tiles.height; row++) {
         for (let col = 0; col < state.editor.tiles.width; col++) {
-            const t = state.editor.tiles.get(col, row)
-            const c = REVRSE_CHAR_MAP[t];
+            const t = state.editor.tiles.get(col, row);
             if (row > 0 && col == 0) {
                 str += "\n";
             }
-            str += c;
+            if (row == state.editor.spawn[1] && col == state.editor.spawn[0]) {
+                str += "s";
+            } else {
+                str += REVRSE_CHAR_MAP[t];
+            }
         }
     }
-    state.editor.tiles.forEach((x, y, t) => {
-
-    });
     return str;
 }
 
@@ -413,10 +413,14 @@ export function deserializeEditor(data: string, state: State) {
         data,
         state.editor.tiles,
         (char, [x, y]) => {
-            // if (char == "s") {
-            //     // start
-            //     state.path = [[x, y]]
-            // }
+            if (char == "s") {
+                // start
+                state.path = [[x, y]];
+                state.editor.spawn = [x,y]
+            } else {
+            console.log("Ignoring char", char)
+
+            }
             // if (char == "A") {
             //     // enemy a
             //     state.entities.push({
@@ -426,7 +430,6 @@ export function deserializeEditor(data: string, state: State) {
             //         pos: [x, y]
             //     });
             // }
-            console.log("Ignoring char", char)
             return "EMPTY";
         }
     );
