@@ -37,6 +37,7 @@ export type State = {
         tiles: Arr2<Tile>,
         filename: string | null,
         spawn: XY,
+        entities: Entity[]
         mode: "tile"|"entity"
     },
     mouse: {
@@ -83,7 +84,8 @@ export function initState(): State {
             tiles: editor,
             filename: null,
             spawn: [5,5],
-            mode:"tile"
+            mode:"tile",
+            entities: []
         },
         mouse: {
             pos: [0, 0],

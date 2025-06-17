@@ -6,7 +6,7 @@ type TileFunction = (pos: XY, time: number) => string | null;
 function animTileFunction(rate: number, frames: string[]): TileFunction {
     const len = frames.length;
     return (xy, time) => {
-        const i = Math.floor((time / rate * len) % len);
+        const i = Math.floor((time / rate * len + xy[0]/3.1 + xy[1]/2.9) % len);
         return frames[i];
     }
 }

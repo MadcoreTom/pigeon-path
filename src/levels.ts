@@ -1,6 +1,6 @@
 import { Arr2 } from "./arr2"
 import { Tile } from "./tile"
-import { State, XY } from "./world"
+import { Entity, State, XY } from "./world"
 
 
 // Learn that you move 4 steps
@@ -86,7 +86,39 @@ wwww.......:wwwwwwww
 wwwwww.......owwwwww
 wwwwwwww.....!wwwwww
 wwwwwwwwwww#..wwwwww
-wwwwwwwwwwwwwwwwwwww`
+wwwwwwwwwwwwwwwwwwww`;
+
+// learn about vertical enemies
+const L5 = `
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+ww:::.......::::::ww
+ww::........::::::ww
+ww:::.......::::::ww
+ww::....#...::::::ww
+ww:::.....#.::::::ww
+ww::.#......:::{::ww
+ww:::.......:{::..ww
+ww:s...#....::::.!ww
+ww:::.......::::..ww
+ww::.....#..::::{:ww
+ww:::.#....#::::::ww
+ww::........::{:::ww
+ww:::.......::::::ww
+ww::........::::::ww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+"vertical",5,8
+"vertical",6,7
+"vertical",7,11
+"vertical",8,7
+"vertical",9,4
+"vertical",10,10
+"vertical",11,6
+"vertical",13,10
+"vertical",14,6
+"vertical",15,10
+"vertical",16,4`
 
 const ISLAND = `
 wwwwwwwwwwwwwwwwwwww
@@ -407,7 +439,9 @@ const ROOMS = `
 `
 
 const LEVELS = [
-    L1, L2, L3, L4
+    L1, 
+    L2, L3, L4,
+    L5,
     // ISLAND,
     // LEVEL_MULT_2,
     // // LEVEL_ENEMY,
@@ -435,7 +469,20 @@ const CHAR_MAP: { [id: string]: Tile } = {
 }
 
 const REVRSE_CHAR_MAP = Object.entries(CHAR_MAP).reduce((acc, [v, k]) => { acc[k] = v; return acc }, {});
-console.log(REVRSE_CHAR_MAP)
+console.log(REVRSE_CHAR_MAP);
+
+
+type EntitySerializer = {
+    toEntity:(args:any[])=>Entity,
+    toArgs:(entity:Entity)=>any[]
+}
+
+const ENTITY_SERIALIZERS:{[type:string]:EntitySerializer} = {
+    "vertical":{
+        toEntity: args => ({type:"vertical", pos:[parseInt(args[1]),parseInt(args[2])], down: true, path:[[parseInt(args[1]),parseInt(args[2])]]}),
+        toArgs: ent=> ["vertical", ent.pos[0], ent.pos[1]]
+    }
+}
 
 export function loadLevel(state: State, levelNum: number) {
     const level = LEVELS[levelNum % LEVELS.length];
@@ -459,22 +506,35 @@ export function loadLevel(state: State, levelNum: number) {
                     });
                 }
                 return "EMPTY";
+            },
+            args=>{
+                const ent = ENTITY_SERIALIZERS[args[0]].toEntity(args);
+                ent && state.entities.push(ent);
             }
         );
     }
 }
 
-function loadTiles(data: string, tiles: Arr2<Tile>, handler: (c: string, xy: XY) => Tile) {
+const LEVEL_ROWS = 18;
+
+function loadTiles(data: string, tiles: Arr2<Tile>, handler: (c: string, xy: XY) => Tile, entityHandler: (args:any[]) => void) {
     const lines = data.split(/[\r\n]+/).map(a => a.trim()).filter(a => a.length > 0);
     lines.forEach((line, y) => {
-        line.split("").forEach((char, x) => {
-            const t = CHAR_MAP[char];
-            if (t) {
-                tiles.set(x, y, t);
-            } else {
-                tiles.set(x, y, handler(char, [x, y]));
+        if (y <= LEVEL_ROWS) {
+            line.split("").forEach((char, x) => {
+                const t = CHAR_MAP[char];
+                if (t) {
+                    tiles.set(x, y, t);
+                } else {
+                    tiles.set(x, y, handler(char, [x, y]));
+                }
+            });
+        } else {
+            const parts = JSON.parse(`[${line}]`);
+            if(parts.length > 2){
+                entityHandler(parts);
             }
-        });
+        }
     });
 }
 
@@ -492,6 +552,10 @@ export function serializeEditor(state: State): string {
                 str += REVRSE_CHAR_MAP[t];
             }
         }
+    }
+    for (let ent of state.editor.entities) {
+        const args = JSON.stringify(ENTITY_SERIALIZERS[ent.type].toArgs(ent));
+        str += "\n" + args.substring(1, args.length - 1);
     }
     return str;
 }
@@ -520,6 +584,10 @@ export function deserializeEditor(data: string, state: State) {
             //     });
             // }
             return "EMPTY";
+        },
+        args=>{
+            const ent = ENTITY_SERIALIZERS[args[0]].toEntity(args);
+            ent && state.editor.entities.push(ent);
         }
     );
 }

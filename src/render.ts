@@ -38,7 +38,9 @@ const img = new TileImage("img.png", 13, {
     water2: [3, 15],
     water3: [4, 15],
     stoneDoorway: [5, 15],
-    stoneDoor: [6, 15]
+    stoneDoor: [6, 15],
+    // entities
+    enemy: [7,0]
 });
 
 const smallText = new TileImage("dogica.png", 9, {});
@@ -103,6 +105,13 @@ function renderEditor(ctx: CanvasRenderingContext2D, state: State, time: number)
     // SPAWN
     if(time % 500 < 250){
         img.drawTile(ctx,[state.editor.spawn[0]*13, state.editor.spawn[1]*13], "arrowRightYellow")
+    }
+
+    // Entities
+    if (time % 500 > 250) {
+        state.editor.entities.forEach(e => {
+            img.drawTile(ctx, [e.pos[0]*13, e.pos[1]*13], "enemy")
+        });
     }
 
     // hud

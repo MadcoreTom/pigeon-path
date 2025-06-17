@@ -46,7 +46,6 @@ export function update(state: State, delta: number) {
         }
 
         if (movement) {
-            console.log("MOVE",movement)
             const end = state.path[state.path.length - 1];
             const secondEnd = state.path[state.path.length - 2];
             const newPos: XY = [end[0] + movement[0], end[1] + movement[1]];
@@ -60,7 +59,9 @@ export function update(state: State, delta: number) {
                 SOUND.collide();
             } else {
                 // push
-                const collides = TILES[state.tiles.get(newPos[0], newPos[1])].solid || state.entities.filter(e=>e.pos[0] == newPos[0] && e.pos[1] == newPos[1]).length > 0;
+                let collides = TILES[state.tiles.get(newPos[0], newPos[1])].solid;
+                collides ||= state.entities.filter(e=>e.pos[0] == newPos[0] && e.pos[1] == newPos[1]).length > 0;
+                collides ||= state.path.filter(p=>p[0]==newPos[0] && p[1] == newPos[1]).length > 0;
                 if (!collides) {
                     const t = state.tiles.get(newPos[0], newPos[1]);
                     const needsToFinishOnThisTile = !!TILES[t].use;
@@ -214,18 +215,17 @@ function calcEntityPath(state: State) {
         if (e.type == "vertical") {
             for (let i = 0, tries = 0; i < 3 && tries < 10; i++, tries++) {
                 const end = e.path[e.path.length - 1];
-                const up = state.tiles.get(end[0], end[1] - 1);
-                const down = state.tiles.get(end[0], end[1] + 1);
-                console.log(up, down)
+                const up = TILES[state.tiles.get(end[0], end[1] - 1)];
+                const down = TILES[state.tiles.get(end[0], end[1] + 1)];
                 if (e.down) {
-                    if (down != "WALL" && down != "DOOR_CLOSED") {
+                    if (!down.solid && !down.use) {
                         e.path.push([end[0], end[1] + 1]);
                     } else {
                         e.down = false;
                         i--;
                     }
                 } else if (!e.down) {
-                    if (up != "WALL" && up != "DOOR_CLOSED") {
+                     if (!up.solid && !up.use) {
                         e.path.push([end[0], end[1] - 1]);
                     } else {
                         e.down = true;
@@ -272,6 +272,15 @@ function updateEditor(state: State) {
                 switch(state.mouse.scroll % 2){
                     case 0:
                         state.editor.spawn = [tx,ty]
+                        break;
+                    case 1:
+                        let cur = state.editor.entities.filter(e=>e.pos[0] == tx && e.pos[1] == ty)[0];
+                        if(cur){
+                            // remove
+                            state.editor.entities = state.editor.entities.filter(e=>!(e.pos[0] == tx && e.pos[1] == ty));
+                        } else {
+                            state.editor.entities.push({ type:"vertical", pos:[tx,ty], down:true, path:[]})
+                        }
                 }
             }
         }
