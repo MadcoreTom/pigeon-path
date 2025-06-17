@@ -25,7 +25,7 @@ export class TileType {
         public readonly solid: boolean,
         background?: string | TileFunction,
         foreground?: string | TileFunction,
-        public readonly use?: { name: string }
+        public readonly use?: { name: string, newTile?: Tile }
     ) {
         if (background) {
             this.getTileBackground = typeof background == "string" ? () => background : background;
@@ -52,8 +52,10 @@ class Tiles {
     readonly SAND = new TileType(false, "sand");
     readonly CACTUS = new TileType(true, checkerboardTileFunction("cactus1", "cactus2"));
     readonly STONE_WALL = new TileType(true, checkerboardTileFunction("stoneWall1","stoneWall2"));
-    readonly CRATE_CLOSED = new TileType(false, "crate", undefined, { name: "open" });
+    readonly CRATE_CLOSED = new TileType(false, "crate", undefined, { name: "open", newTile: "CRATE_OPENED" });
     readonly CRATE_OPENED = new TileType(false, "crateBroken");
+    readonly STONE_DOORWAY = new TileType(false, "sand", "stoneDoorway");
+    readonly STONE_DOOR = new TileType(false, "sand", "stoneDoor", { name: "open", newTile: "STONE_DOORWAY" });
 }
 
 export const TILES = new Tiles();

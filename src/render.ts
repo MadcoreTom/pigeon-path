@@ -36,7 +36,9 @@ const img = new TileImage("img.png", 13, {
     stoneWall2: [1, 15],
     water1: [2, 15],
     water2: [3, 15],
-    water3: [4, 15]
+    water3: [4, 15],
+    stoneDoorway: [5, 15],
+    stoneDoor: [6, 15]
 });
 
 const smallText = new TileImage("dogica.png", 9, {});
@@ -51,7 +53,7 @@ export function render(ctx: CanvasRenderingContext2D, state: State, time: number
         renderEditMenu(ctx, state, time);
         return;
     }
-    renderTiles(ctx, state.tiles, time);
+    renderTiles(ctx, state.tiles, time, "background");
 
     state.entities.forEach(e => {
         renderPath(ctx, e.path, time, 12);
@@ -70,6 +72,9 @@ export function render(ctx: CanvasRenderingContext2D, state: State, time: number
         img.draw(ctx, getFrame(time), [state.path[0][0] * 13, state.path[0][1] * 13]);
     }
 
+    
+    renderTiles(ctx, state.tiles, time, "foreground");
+
     renderHud(ctx, state);
 
     if (state.mode.type == "transition") {
@@ -85,7 +90,8 @@ function renderEditor(ctx: CanvasRenderingContext2D, state: State, time: number)
     if (state.mode.type != "editor") {
         return;
     }
-    renderTiles(ctx, state.editor.tiles, time);
+    renderTiles(ctx, state.editor.tiles, time, "background");
+    renderTiles(ctx, state.editor.tiles, time, "foreground");
 
 
     const tx = Math.floor(state.mouse.pos[0] / 13);
@@ -135,39 +141,44 @@ function renderEditMenu(ctx: CanvasRenderingContext2D, state: State, time: numbe
 }
 
 
-function renderTiles(ctx: CanvasRenderingContext2D, tiles: Arr2<Tile>, time: number) {
-    ctx.fillStyle = COLOURS.SECONDARY;
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+function renderTiles(ctx: CanvasRenderingContext2D, tiles: Arr2<Tile>, time: number, layer: "foreground" | "background") {
 
-    // background
-    tiles.forEach((x, y, t) => {
-        const name = TILES[t].getTileBackground([x, y], time);
-        if (name) {
-            img.drawTile(ctx, [x * 13, y * 13], name as any)
-        }
-    });
 
-    // borders
-    tiles.forEach((x, y, t) => {
-        if (TILES[t].solid) {
-            if (!TILES[tiles.get(x - 1, y)].solid) {
-                ctx.fillStyle = COLOURS.DARK;
-                ctx.fillRect(x * 13, y * 13, 1, 13);
+    if (layer == "background") {
+        ctx.fillStyle = COLOURS.SECONDARY;
+        ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+        // background
+        tiles.forEach((x, y, t) => {
+            const name = TILES[t].getTileBackground([x, y], time);
+            if (name) {
+                img.drawTile(ctx, [x * 13, y * 13], name as any)
             }
-            if (!TILES[tiles.get(x + 1, y)].solid) {
-                ctx.fillStyle = COLOURS.DARK;
-                ctx.fillRect(x * 13 + 12, y * 13, 1, 13);
+        });
+
+        // borders
+        tiles.forEach((x, y, t) => {
+            if (TILES[t].solid) {
+                if (!TILES[tiles.get(x - 1, y)].solid) {
+                    ctx.fillStyle = COLOURS.DARK;
+                    ctx.fillRect(x * 13, y * 13, 1, 13);
+                }
+                if (!TILES[tiles.get(x + 1, y)].solid) {
+                    ctx.fillStyle = COLOURS.DARK;
+                    ctx.fillRect(x * 13 + 12, y * 13, 1, 13);
+                }
+                if (!TILES[tiles.get(x, y - 1)].solid) {
+                    ctx.fillStyle = COLOURS.DARK;
+                    ctx.fillRect(x * 13, y * 13, 13, 1);
+                }
+                if (!TILES[tiles.get(x, y + 1)].solid) {
+                    ctx.fillStyle = COLOURS.DARK;
+                    ctx.fillRect(x * 13, y * 13 + 12, 13, 1);
+                }
             }
-            if (!TILES[tiles.get(x, y - 1)].solid) {
-                ctx.fillStyle = COLOURS.DARK;
-                ctx.fillRect(x * 13, y * 13, 13, 1);
-            }
-            if (!TILES[tiles.get(x, y + 1)].solid) {
-                ctx.fillStyle = COLOURS.DARK;
-                ctx.fillRect(x * 13, y * 13 + 12, 13, 1);
-            }
-        }
-    });
+        });
+    } else if (layer == "foreground") {
+    }
 
     // foreground
     tiles.forEach((x, y, t) => {
@@ -180,6 +191,7 @@ function renderTiles(ctx: CanvasRenderingContext2D, tiles: Arr2<Tile>, time: num
             img.drawTile(ctx, [x * 13, ty], name as any)
         }
     });
+
 }
 
 function getFrame(time: number): XY {

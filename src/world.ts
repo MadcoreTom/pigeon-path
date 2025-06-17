@@ -56,7 +56,7 @@ export function initState(): State {
     const editor = new Arr2<Tile>(20, 18, "WALL");
     editor.fill((x, y) => x > 11 && Math.random() > y / 20 ? "WALL" : "EMPTY");
 
-    return {
+    const state:State = {
         tiles,
         path: [
             [0, 0],
@@ -69,9 +69,9 @@ export function initState(): State {
             [4, 1],
             [4, 0]
         ],
-        // mode: { type: "transition", direction: "up", progress: 2, levelDelta: 0 },
-        mode: { type: "editor", tile: "WALL" },
-        testing: true,
+        mode: { type: "transition", direction: "up", progress: 2, levelDelta: 0 },
+        // mode: { type: "editor", tile: "WALL" },
+        testing: false,
         moves: 4,
         finalMoves: 4,
         modifiers: [],
@@ -92,7 +92,14 @@ export function initState(): State {
             scroll: 0
         },
         menu: []
+    };
+
+    if (window.location.hash && window.location.hash.indexOf("editor") >= 0) {
+        state.mode = { type: "editor", tile: "WALL" };
+        state.testing = true;
     }
+
+    return state;
 }
 
 

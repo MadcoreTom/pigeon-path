@@ -62,7 +62,8 @@ export function update(state: State, delta: number) {
                 // push
                 const collides = TILES[state.tiles.get(newPos[0], newPos[1])].solid || state.entities.filter(e=>e.pos[0] == newPos[0] && e.pos[1] == newPos[1]).length > 0;
                 if (!collides) {
-                    const needsToFinishOnThisTile = state.tiles.get(newPos[0], newPos[1]) == "DOOR_CLOSED";
+                    const t = state.tiles.get(newPos[0], newPos[1]);
+                    const needsToFinishOnThisTile = !!TILES[t].use;
                     if (needsToFinishOnThisTile && !isSecondFinalLength(state)) {
                         SOUND.doorLocked();
                     } else {
@@ -100,13 +101,13 @@ export function update(state: State, delta: number) {
             const badStop = state.entities.filter(e => e.path.filter(p => p[0] == end[0] && p[1] == end[1]).length > 0).length > 0;
             if (badStop) {
                 state.speechBubble = "Can't move here!";
-            } else if (t == "DOOR_CLOSED") {
+            }  else if (t == "FLAG") {
                 state.speechBubble = TILES[t].use?.name || null;
                 state.canMove = true;
-            } else if (t == "FLAG") {
+            } else if (TILES[t].use) {
                 state.speechBubble = TILES[t].use?.name || null;
                 state.canMove = true;
-            } else {
+            }else {
                 state.speechBubble = "Go!"
                 state.canMove = true;
             }
@@ -120,13 +121,17 @@ export function update(state: State, delta: number) {
             const end = state.path[state.path.length - 1];
             state.path = [end];
             const tile = state.tiles.get(end[0], end[1]);
-            if (tile == "DOOR_CLOSED") {
-                SOUND.openDoor();
-                state.tiles.set(end[0], end[1], "DOOR_OPENED");
-            } else if (tile == "FLAG") {
+             if (tile == "FLAG") {
                 SOUND.newLevel();
                 state.mode = { type: "transition", progress: 0, direction: "down", levelDelta: 1 };
-            }
+            } else if (TILES[tile].use) {
+                 SOUND.openDoor();
+                 if (TILES[tile].use.newTile) {
+                     state.tiles.set(end[0], end[1], TILES[tile].use.newTile);
+                 } else {
+                     state.tiles.set(end[0], end[1], "DOOR_OPENED");
+                 }
+            } 
         }
     } else if (state.mode.type == "entities") {
         let step = false;

@@ -2,6 +2,92 @@ import { Arr2 } from "./arr2"
 import { Tile } from "./tile"
 import { State, XY } from "./world"
 
+
+// Learn that you move 4 steps
+const L1 = `
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwww##wwwwwwwwwwww
+wwwww####wwwwwwwwwww
+wwwww#....!wwwwwwwww
+wwwwww.....wwwwwwwww
+wwwwww....:wwwwwwwww
+wwwwww...::wwwwwwwww
+wwwwwws.:::wwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww`;
+
+// Learn about +1
+const L2= `
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwww&&&wwwwwwwww
+wwwwwwww&:&wwwwwwwww
+wwwww...&&&+..!#wwww
+wwwww.s......###wwww
+wwwww...&&&&w###wwww
+wwwwwwww&::&wwwwwwww
+wwwwwwww&::&wwwwwwww
+wwwwwwww&&&&wwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+`;
+
+// learn about x2
+const L3 = `
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwx....wwwwww
+wwwwwwwww.###.wwwwww
+wwwwwwwww.###.wwwwww
+wwwwwwwww.###.wwwwww
+wwwwwwwwwx###!wwwwww
+wwwwwwwww.####wwwwww
+wwwwwwwww.####.wwwww
+wwwwwwwww.####.wwwww
+wwwwwwwwws####.wwwww
+wwwwwwwww......wwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwww`
+
+// learn about doors
+const L4 = `
+wwwwwwwwwwwwwwwwwwww
+www##......wwwwwwwww
+w####...##.wwwwwwwww
+w##.....##.wwwwwwwww
+w###.......wwwwwwwww
+w##s.......wwwwwwwww
+w####.....##wwwwwwww
+w#...x.....##wwwwwww
+w#....&&]&&##wwwwwww
+w##...&:::&Cwwwwwwww
+ww&&&&&:::&Cwwwwwwww
+ww:::C&&[&&.wwwwwwww
+wwww:....:::wwwwwwww
+wwww.......:wwwwwwww
+wwwwww.......owwwwww
+wwwwwwww.....!wwwwww
+wwwwwwwwwww#..wwwwww
+wwwwwwwwwwwwwwwwwwww`
+
 const ISLAND = `
 wwwwwwwwwwwwwwwwwwww
 wwwwwwww....#wwwwwww
@@ -321,12 +407,13 @@ const ROOMS = `
 `
 
 const LEVELS = [
-    ISLAND,
-    LEVEL_MULT_2,
-    // LEVEL_ENEMY,
-    //    LEVEL1, LEVEL2, ROOMS,LOOPS, LEVEL4, LEVEL5, LEVEL6, 
-    //    LEVEL7,
-    LEVEL3, END
+    L1, L2, L3, L4
+    // ISLAND,
+    // LEVEL_MULT_2,
+    // // LEVEL_ENEMY,
+    // //    LEVEL1, LEVEL2, ROOMS,LOOPS, LEVEL4, LEVEL5, LEVEL6, 
+    // //    LEVEL7,
+    // LEVEL3, END
 ]
 
 const CHAR_MAP: { [id: string]: Tile } = {
@@ -342,7 +429,9 @@ const CHAR_MAP: { [id: string]: Tile } = {
     "&": "STONE_WALL",
     "C": "CRATE_CLOSED",
     "c": "CRATE_OPENED",
-    "{": "CACTUS"
+    "{": "CACTUS",
+    "[": "STONE_DOORWAY",
+    "]": "STONE_DOOR"
 }
 
 const REVRSE_CHAR_MAP = Object.entries(CHAR_MAP).reduce((acc, [v, k]) => { acc[k] = v; return acc }, {});
